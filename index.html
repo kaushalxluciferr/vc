@@ -17,12 +17,15 @@
     --border: #262a35;
   }
   * { box-sizing: border-box; }
-  body {
+  html, body {
     margin: 0;
+    padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
+  }
+  body {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -87,7 +90,7 @@
   #callArea { width: 100%; display: none; flex-direction: column; gap: 12px; }
   #participantCount { font-size: 12.5px; color: var(--muted); text-align: center; }
 
-  /* Main video container */
+  /* Main video container — fixed 16:9 aspect ratio */
   #videoGrid {
     width: 100%;
     position: relative;
@@ -106,7 +109,12 @@
     overflow: hidden;
     transition: all 0.2s ease;
   }
-  .tile video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tile video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: #000;
+  }
   .tile-label {
     position: absolute;
     bottom: 6px;
@@ -144,7 +152,7 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.5);
   }
 
-  /* ====== LAYOUTS ====== */
+  /* ====== LAYOUTS (desktop) ====== */
 
   /* 1 remote: full screen (contain so nothing gets cropped) */
   #videoGrid[data-count="1"] .tile.remote {
@@ -152,8 +160,7 @@
     border-radius: 0;
   }
   #videoGrid[data-count="1"] .tile.remote video {
-    object-fit: contain;   /* show full picture, no cropping */
-    background: #000;
+    object-fit: contain;
   }
 
   /* 2 remotes: side by side, half/half */
@@ -166,7 +173,7 @@
     object-fit: contain;
   }
 
-  /* 3 remotes: 2 up, 1 down (bottom-left), bottom-right free for self */
+  /* 3 remotes: 2 up, 1 down (bottom-left) */
   #videoGrid[data-count="3"] .tile.remote {
     width: 50%; height: 50%;
   }
@@ -189,7 +196,7 @@
     object-fit: contain;
   }
 
-  /* 5+ remotes: 3 columns, 2 rows (up to 6 visible) */
+  /* 5-6 remotes: 3x2 grid */
   #videoGrid[data-count="5"] .tile.remote,
   #videoGrid[data-count="6"] .tile.remote {
     width: 33.333%; height: 50%;
@@ -210,7 +217,7 @@
     object-fit: contain;
   }
 
-  /* 7-9: 3x3 grid */
+  /* 7-9 remotes: 3x3 grid */
   #videoGrid[data-count="7"] .tile.remote,
   #videoGrid[data-count="8"] .tile.remote,
   #videoGrid[data-count="9"] .tile.remote {
@@ -246,7 +253,7 @@
     object-fit: contain;
   }
 
-  /* 10+: scrollable grid (rare) */
+  /* 10+ remotes: scrollable grid */
   #videoGrid[data-count="10"],
   #videoGrid[data-count="11"],
   #videoGrid[data-count="12"] {
@@ -255,7 +262,6 @@
     aspect-ratio: auto;
     height: 70vh;
     overflow-y: auto;
-    position: relative;
   }
   #videoGrid[data-count="10"] .tile.remote,
   #videoGrid[data-count="11"] .tile.remote,
@@ -305,31 +311,151 @@
   .chat-input-row input:focus { outline: 1px solid var(--accent); }
   .chat-note { font-size: 11px; color: var(--muted); text-align: center; margin: 0; }
 
-  @media (max-width: 480px) {
-    header { padding: 12px 14px; }
-    header h1 { font-size: 17px; }
+  /* ====== MOBILE OPTIMIZATIONS ====== */
+  @media (max-width: 640px) {
     main { padding: 14px 8px 36px; gap: 12px; }
     .card { padding: 16px; }
     .card h2 { font-size: 15px; }
     .card p { font-size: 13px; }
-    button { padding: 10px 14px; font-size: 13.5px; }
-    .tile-label { font-size: 10px; padding: 2px 6px; }
-    .pip-btn { font-size: 9.5px; padding: 3px 6px; }
-    .tile.self-tile { width: 28%; max-width: 110px; min-width: 70px; bottom: 8px; right: 8px; }
-    #controls { gap: 8px; }
-    #chatMessages { max-height: 160px; }
-    .chat-msg { font-size: 12.5px; max-width: 90%; }
+    button { padding: 12px 16px; font-size: 14px; }
+
+    /* On mobile, use portrait-friendly aspect for the video grid */
+    #videoGrid {
+      aspect-ratio: 9/16;
+      max-height: 60vh;
+    }
+
+    /* Mobile: 1 remote fills screen */
+    #videoGrid[data-count="1"] .tile.remote {
+      top: 0; left: 0; width: 100%; height: 100%;
+      border-radius: 0;
+    }
+    #videoGrid[data-count="1"] .tile.remote video {
+      object-fit: contain;
+    }
+
+    /* Mobile: 2 remotes — TOP/BOTTOM split (half & half vertically) */
+    #videoGrid[data-count="2"] .tile.remote {
+      left: 0; width: 100%; height: 50%;
+    }
+    #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { top: 0; }
+    #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { top: 50%; }
+    #videoGrid[data-count="2"] .tile.remote video {
+      object-fit: contain;
+    }
+
+    /* Mobile: 3 remotes — first two on top half, third bottom half */
+    #videoGrid[data-count="3"] .tile.remote {
+      width: 50%; height: 50%;
+    }
+    #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
+    #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
+    #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; width: 100%; }
+    #videoGrid[data-count="3"] .tile.remote video {
+      object-fit: contain;
+    }
+
+    /* Mobile: 4 remotes — 2x2 grid */
+    #videoGrid[data-count="4"] .tile.remote {
+      width: 50%; height: 50%;
+    }
+    #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
+    #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
+    #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; }
+    #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top: 50%; left: 50%; }
+    #videoGrid[data-count="4"] .tile.remote video {
+      object-fit: contain;
+    }
+
+    /* Mobile: 5+ remotes — 3 columns, auto rows, scrollable */
+    #videoGrid[data-count="5"],
+    #videoGrid[data-count="6"],
+    #videoGrid[data-count="7"],
+    #videoGrid[data-count="8"],
+    #videoGrid[data-count="9"],
+    #videoGrid[data-count="10"],
+    #videoGrid[data-count="11"],
+    #videoGrid[data-count="12"] {
+      display: flex;
+      flex-wrap: wrap;
+      aspect-ratio: auto;
+      height: 60vh;
+      overflow-y: auto;
+    }
+    #videoGrid[data-count="5"] .tile.remote,
+    #videoGrid[data-count="6"] .tile.remote,
+    #videoGrid[data-count="7"] .tile.remote,
+    #videoGrid[data-count="8"] .tile.remote,
+    #videoGrid[data-count="9"] .tile.remote,
+    #videoGrid[data-count="10"] .tile.remote,
+    #videoGrid[data-count="11"] .tile.remote,
+    #videoGrid[data-count="12"] .tile.remote {
+      position: relative;
+      width: 33.333%;
+      height: 50%;
+    }
+    #videoGrid[data-count="5"] .tile.remote video,
+    #videoGrid[data-count="6"] .tile.remote video,
+    #videoGrid[data-count="7"] .tile.remote video,
+    #videoGrid[data-count="8"] .tile.remote video,
+    #videoGrid[data-count="9"] .tile.remote video,
+    #videoGrid[data-count="10"] .tile.remote video,
+    #videoGrid[data-count="11"] .tile.remote video,
+    #videoGrid[data-count="12"] .tile.remote video {
+      object-fit: contain;
+    }
+    #videoGrid[data-count="5"] .tile.self-tile,
+    #videoGrid[data-count="6"] .tile.self-tile,
+    #videoGrid[data-count="7"] .tile.self-tile,
+    #videoGrid[data-count="8"] .tile.self-tile,
+    #videoGrid[data-count="9"] .tile.self-tile,
+    #videoGrid[data-count="10"] .tile.self-tile,
+    #videoGrid[data-count="11"] .tile.self-tile,
+    #videoGrid[data-count="12"] .tile.self-tile {
+      position: fixed;
+    }
+
+    /* Mobile: self tile smaller */
+    .tile.self-tile {
+      width: 30%;
+      max-width: 110px;
+      min-width: 70px;
+      bottom: 8px;
+      right: 8px;
+    }
+
+    /* Mobile controls: 2x2 grid + full-width End Call */
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    #controls button {
+      flex: 1 1 calc(50% - 8px);
+      min-width: 0;
+      padding: 14px 8px;
+      font-size: 14px;
+    }
+    #controls #endBtn {
+      flex: 1 1 100%;
+    }
   }
 
   @media (max-width: 360px) {
-    #controls button { flex: 1 1 calc(50% - 8px); }
+    header { padding: 12px 14px; }
+    header h1 { font-size: 17px; }
+    .tile-label { font-size: 10px; padding: 2px 6px; }
+    .pip-btn { font-size: 9.5px; padding: 3px 6px; }
+    #chatMessages { max-height: 160px; }
+    .chat-msg { font-size: 12.5px; max-width: 90%; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Quick<span>Call designed by Ankush</span></h1>
+  <h1>Quick<span>Call</span></h1>
 </header>
 
 <main>
@@ -450,7 +576,10 @@ function shortLabel(id) {
 
 async function getLocalStream() {
   if (localStream) return localStream;
-  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  localStream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+    audio: true
+  });
   return localStream;
 }
 
@@ -477,6 +606,7 @@ function ensureTile(id, label) {
   video.playsInline = true;
   video.setAttribute('playsinline', '');
   video.setAttribute('webkit-playsinline', '');
+  video.setAttribute('muted', id === 'self' ? 'true' : 'false');
   if (id === 'self') video.muted = true;
   wrap.appendChild(video);
 
@@ -536,6 +666,70 @@ function showCallUI() {
 }
 
 // ---------------------------------------------------------------------
+// Picture-in-Picture for local camera when page is hidden / minimized
+// ---------------------------------------------------------------------
+let localPipVideo = null;
+
+function setupLocalPip() {
+  // Create a hidden video element to receive the local stream for PiP
+  if (localPipVideo) return;
+  localPipVideo = document.createElement('video');
+  localPipVideo.muted = true;
+  localPipVideo.playsInline = true;
+  localPipVideo.setAttribute('playsinline', '');
+  localPipVideo.style.position = 'fixed';
+  localPipVideo.style.width = '1px';
+  localPipVideo.style.height = '1px';
+  localPipVideo.style.opacity = '0';
+  localPipVideo.style.pointerEvents = 'none';
+  document.body.appendChild(localPipVideo);
+}
+
+async function enableLocalPip() {
+  if (!localStream || !localPipVideo) return;
+  // Only available in browsers that support PiP
+  if (!document.pictureInPictureEnabled || !localPipVideo.requestPictureInPicture) return;
+
+  // Don't try if another element is already in PiP
+  if (document.pictureInPictureElement) return;
+
+  try {
+    localPipVideo.srcObject = localStream;
+    await localPipVideo.play().catch(() => {});
+    await localPipVideo.requestPictureInPicture();
+  } catch (e) {
+    // Silently fail — user may not allow it or browser may not support it
+    console.warn('Local PiP could not be enabled:', e);
+  }
+}
+
+async function disableLocalPip() {
+  try {
+    if (document.pictureInPictureElement && document.pictureInPictureElement === localPipVideo) {
+      await document.exitPictureInPicture();
+    }
+  } catch (e) { /* ignore */ }
+}
+
+// When page becomes hidden (user switches app / minimizes Chrome), enter PiP
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    // Page is hidden — try to enter PiP so camera keeps streaming
+    enableLocalPip();
+  } else {
+    // Page is visible again — exit PiP
+    disableLocalPip();
+    // Ensure all videos resume
+    resumeAllVideos();
+  }
+});
+
+// Also try PiP on pagehide (covers more mobile cases)
+window.addEventListener('pagehide', () => {
+  enableLocalPip();
+});
+
+// ---------------------------------------------------------------------
 // Mesh networking
 // ---------------------------------------------------------------------
 function registerCall(id, call) {
@@ -544,10 +738,8 @@ function registerCall(id, call) {
   call.on('stream', (remoteStream) => {
     const tile = ensureTile(id, shortLabel(id));
     tile.video.srcObject = remoteStream;
-    // Force load & play — important on mobile
     tile.video.load();
     tile.video.play().catch(() => {});
-    // Re-apply layout so single remote fills screen correctly
     updateGridLayout();
   });
   call.on('close', () => { removeTile(id); delete peers[id]; });
@@ -634,6 +826,7 @@ function endCall() {
   if (peer) peer.destroy();
   if (localStream) localStream.getTracks().forEach((t) => t.stop());
   if (screenStream) screenStream.getTracks().forEach((t) => t.stop());
+  disableLocalPip();
   window.location.href = window.location.pathname;
 }
 
@@ -653,6 +846,7 @@ createBtn.addEventListener('click', async () => {
     return;
   }
   outgoingStream = localStream;
+  setupLocalPip();
 
   peer = new Peer(roomId);
   initPeerEvents();
@@ -711,6 +905,7 @@ if (roomFromUrl) {
       return;
     }
     outgoingStream = localStream;
+    setupLocalPip();
 
     peer = new Peer();
     initPeerEvents();
@@ -756,7 +951,7 @@ camBtn.addEventListener('click', () => {
 endBtn.addEventListener('click', endCall);
 
 // ---------------------------------------------------------------------
-// Screen sharing
+// Screen sharing (works on desktop AND mobile)
 // ---------------------------------------------------------------------
 const screenShareSupported = !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
 
@@ -776,21 +971,27 @@ function replaceOutgoingVideoTrackAll(newTrack) {
 
 shareBtn.addEventListener('click', async () => {
   if (!screenShareSupported) {
-    showCallMsg('Screen sharing isn\'t supported on this browser. It works reliably on desktop Chrome, Edge, or Firefox.', 6000);
+    showCallMsg('Screen sharing isn\'t supported on this browser. Try on a desktop Chrome, Edge, or Firefox, or on Android Chrome.', 6000);
     return;
   }
 
   if (!isScreenSharing) {
     try {
-      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      // Mobile-friendly: try with explicit constraints; some browsers need this
+      screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { cursor: 'always' },
+        audio: false
+      });
     } catch (e) {
       console.warn('getDisplayMedia error:', e);
       if (e && e.name === 'NotAllowedError') {
         showCallMsg('Screen share was cancelled or permission was denied.', 4000);
       } else if (e && e.name === 'NotSupportedError') {
-        showCallMsg('Screen sharing is not supported on this device. Try on a desktop browser.', 5000);
+        showCallMsg('Screen sharing is not supported on this device. On Android, try Chrome 107+ and enable it from the share menu.', 5000);
+      } else if (e && e.name === 'TypeError') {
+        showCallMsg('Screen sharing needs a secure context (HTTPS). Please use the https:// link.', 5000);
       } else {
-        showCallMsg('Could not start screen sharing on this device. On mobile, screen share may not be supported by your browser.', 5000);
+        showCallMsg('Could not start screen sharing on this device.', 5000);
       }
       return;
     }
@@ -811,6 +1012,11 @@ shareBtn.addEventListener('click', async () => {
     shareBtn.classList.add('active');
     camBtn.disabled = true;
     screenTrack.onended = stopScreenShare;
+
+    // When sharing screen on mobile, the local PiP should show the screen
+    if (localPipVideo) {
+      localPipVideo.srcObject = outgoingStream;
+    }
   } else {
     stopScreenShare();
   }
@@ -830,6 +1036,9 @@ function stopScreenShare() {
       if (selfTile) {
         selfTile.video.srcObject = outgoingStream;
         selfTile.video.play().catch(() => {});
+      }
+      if (localPipVideo) {
+        localPipVideo.srcObject = outgoingStream;
       }
     }
   }
@@ -886,16 +1095,17 @@ function resumeAllVideos() {
     }
   });
 }
-document.addEventListener('visibilitychange', () => { resumeAllVideos(); });
 window.addEventListener('pageshow', resumeAllVideos);
 window.addEventListener('focus', resumeAllVideos);
-window.addEventListener('pagehide', () => {});
 window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
     resumeAllVideos();
   }
 });
 
+// ---------------------------------------------------------------------
+// Hide invite link when a remote peer joins
+// ---------------------------------------------------------------------
 const originalRegisterCall = registerCall;
 registerCall = function(id, call) {
   originalRegisterCall(id, call);
@@ -914,7 +1124,7 @@ registerConn = function(id, conn) {
   });
 };
 
-// Ensure remote video plays on mobile
+// Ensure remote video plays on mobile after user tap
 document.addEventListener('click', resumeAllVideos, { once: false });
 </script>
 
