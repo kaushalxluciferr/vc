@@ -177,7 +177,7 @@
 <body>
 
 <header>
-  <h1>Ankush<span>Call</span></h1>
+  <h1>Quick<span>Call</span></h1>
 </header>
 
 <main>
@@ -271,6 +271,13 @@ const chatPanel = document.getElementById('chatPanel');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
+
+// Helper to hide the invite link and copy row
+function hideInviteLink() {
+  linkBox.style.display = 'none';
+  copyRow.style.display = 'none';
+  setupCard.style.display = 'none';
+}
 
 function showCallMsg(text, timeout) {
   callMsg.textContent = text;
@@ -433,7 +440,16 @@ function initPeerEvents() {
   });
   peer.on('error', (err) => {
     console.error(err);
-    showCallMsg('Connection error: ' + err.type, 4000);
+    const msg = 'Connection error: ' + err.type + '. Check your internet connection and try again.';
+    if (callArea.style.display === 'flex') {
+      showCallMsg(msg, 6000);
+    } else {
+      statusEl.textContent = msg;
+      joinStatus.textContent = msg;
+      createBtn.disabled = false;
+      acceptBtn.disabled = false;
+      declineBtn.disabled = false;
+    }
   });
   peer.on('disconnected', () => {
     showCallMsg('Lost connection to the signaling server — trying to reconnect…', 4000);
@@ -472,7 +488,12 @@ createBtn.addEventListener('click', async () => {
   peer = new Peer(roomId);
   initPeerEvents();
 
+  const openTimeout = setTimeout(() => {
+    statusEl.textContent = 'Still trying to connect… this is taking longer than usual. Some mobile data/WiFi networks (especially college or office WiFi) block the connection this needs. Try switching networks, or refresh and try again.';
+  }, 8000);
+
   peer.on('open', (id) => {
+    clearTimeout(openTimeout);
     myId = id;
     const link = window.location.origin + window.location.pathname + '?room=' + id;
     linkBox.style.display = 'block';
@@ -489,7 +510,14 @@ createBtn.addEventListener('click', async () => {
 
     const selfTile = ensureTile('self', 'You');
     selfTile.video.srcObject = outgoingStream;
-    showCallUI();
+
+    // Keep the setup card (with the invite link) visible instead of hiding
+    // it — this is a group call, so you may want to invite more people
+    // after the call has already started.
+    joinCard.style.display = 'none';
+    createBtn.style.display = 'none';
+    callArea.style.display = 'flex';
+    controlsEl.style.display = 'flex';
   });
 });
 
@@ -519,7 +547,12 @@ if (roomFromUrl) {
     peer = new Peer();
     initPeerEvents();
 
+    const openTimeout = setTimeout(() => {
+      joinStatus.textContent = 'Still trying to connect… this is taking longer than usual. Some mobile data/WiFi networks block the connection this needs. Try switching networks, or refresh and try again.';
+    }, 8000);
+
     peer.on('open', (id) => {
+      clearTimeout(openTimeout);
       myId = id;
       const selfTile = ensureTile('self', 'You');
       selfTile.video.srcObject = outgoingStream;
@@ -676,6 +709,30 @@ function resumeAllVideos() {
 document.addEventListener('visibilitychange', () => { if (!document.hidden) resumeAllVideos(); });
 window.addEventListener('pageshow', resumeAllVideos);
 window.addEventListener('focus', resumeAllVideos);
+
+// ---------------------------------------------------------------------
+// Hide invite link as soon as a remote peer joins (either via call or connection)
+// ---------------------------------------------------------------------
+// Override registerCall to hide link on first remote stream
+const originalRegisterCall = registerCall;
+registerCall = function(id, call) {
+  originalRegisterCall(id, call);
+  call.on('stream', () => {
+    // A remote participant has joined - hide the invite link
+    hideInviteLink();
+    statusEl.textContent = '';
+  });
+};
+
+// Also hide link when a data connection is opened (in case video takes a moment)
+const originalRegisterConn = registerConn;
+registerConn = function(id, conn) {
+  originalRegisterConn(id, conn);
+  conn.on('open', () => {
+    hideInviteLink();
+    statusEl.textContent = '';
+  });
+};
 </script>
 
 </body>
