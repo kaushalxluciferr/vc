@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QuickCall — Video Calling</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --accent: #4f7cff;
+    --accent-hover: #3d63e0;
+    --danger: #e0473d;
+    --text: #eef0f4;
+    --muted: #8a8fa3;
+    --border: #262a35;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    width: 100%;
+    padding: 18px 24px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+  header span { color: var(--accent); }
+
+  main {
+    width: 100%;
+    max-width: 640px;
+    padding: 24px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    width: 100%;
+    text-align: center;
+  }
+  .card h2 { margin-top: 0; font-size: 17px; font-weight: 600; }
+  .card p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+  button {
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-secondary { background: #262a35; color: var(--text); }
+  .btn-secondary:hover { background: #303543; }
+
+  #linkBox {
+    display: none;
+    margin-top: 14px;
+    background: #10121a;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    word-break: break-all;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+
+  #videos {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 14px;
+    overflow: hidden;
+    aspect-ratio: 16/10;
+  }
+  video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .label {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    background: rgba(0,0,0,0.5);
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  #localWrap { position: absolute; width: 34%; max-width: 160px; bottom: 12px; right: 12px; border: 2px solid var(--border); z-index: 2; aspect-ratio: 3/4; }
+  #remoteWrap { position: relative; }
+
+  #controls { display: none; gap: 12px; margin-top: 4px; }
+  #status { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .id-badge { font-size: 12px; color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Quick<span>Call</span></h1>
+</header>
+
+<main>
+
+  <div class="card" id="setupCard">
+    <h2>Start or Join a Video Call</h2>
+    <p>Click below to create a call, then send the link that appears to the person you want to call. When they open it and accept, you'll both be connected.</p>
+    <div class="row">
+      <button class="btn-primary" id="createBtn">Create Call & Get Link</button>
+    </div>
+    <div id="linkBox"></div>
+    <div class="row" id="copyRow" style="display:none;">
+      <button class="btn-secondary" id="copyBtn">Copy Link</button>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <div class="card" id="joinCard" style="display:none;">
+    <h2>Incoming Call Invitation</h2>
+    <p>Someone has sent you a QuickCall link. Accept to join the video call.</p>
+    <div class="row">
+      <button class="btn-primary" id="acceptBtn">Accept & Join</button>
+      <button class="btn-secondary" id="declineBtn">Decline</button>
+    </div>
+    <div id="joinStatus" class="id-badge"></div>
+  </div>
+
+  <div id="videos">
+    <div id="remoteWrap" class="video-wrap">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="label">Them</div>
+      <div id="localWrap" class="video-wrap">
+        <video id="localVideo" autoplay playsinline muted></video>
+        <div class="label">You</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <button class="btn-secondary" id="muteBtn">Mute</button>
+    <button class="btn-secondary" id="camBtn">Camera Off</button>
+    <button class="btn-danger" id="endBtn">End Call</button>
+  </div>
+
+</main>
+
+<script>
+let peer = null;
+let localStream = null;
+let currentCall = null;
+let micOn = true;
+let camOn = true;
+
+const setupCard = document.getElementById('setupCard');
+const joinCard = document.getElementById('joinCard');
+const createBtn = document.getElementById('createBtn');
+const linkBox = document.getElementById('linkBox');
+const copyRow = document.getElementById('copyRow');
+const copyBtn = document.getElementById('copyBtn');
+const statusEl = document.getElementById('status');
+const joinStatus = document.getElementById('joinStatus');
+const acceptBtn = document.getElementById('acceptBtn');
+const declineBtn = document.getElementById('declineBtn');
+const videosEl = document.getElementById('videos');
+const controlsEl = document.getElementById('controls');
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+const muteBtn = document.getElementById('muteBtn');
+const camBtn = document.getElementById('camBtn');
+const endBtn = document.getElementById('endBtn');
+
+function genId() {
+  return 'qc-' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
+}
+
+function getRoomFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('room');
+}
+
+async function getLocalStream() {
+  if (localStream) return localStream;
+  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  localVideo.srcObject = localStream;
+  return localStream;
+}
+
+function showCallUI() {
+  setupCard.style.display = 'none';
+  joinCard.style.display = 'none';
+  videosEl.style.display = 'flex';
+  controlsEl.style.display = 'flex';
+}
+
+function wireCallEvents(call) {
+  currentCall = call;
+  call.on('stream', (remoteStream) => {
+    remoteVideo.srcObject = remoteStream;
+  });
+  call.on('close', endCall);
+  call.on('error', (err) => {
+    console.error(err);
+    statusEl.textContent = 'Call error: ' + err;
+  });
+}
+
+function endCall() {
+  if (currentCall) currentCall.close();
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+  }
+  window.location.href = window.location.pathname;
+}
+
+// ---- HOST FLOW ----
+createBtn.addEventListener('click', async () => {
+  createBtn.disabled = true;
+  statusEl.textContent = 'Setting up your call…';
+  const roomId = genId();
+
+  try {
+    await getLocalStream();
+  } catch (e) {
+    statusEl.textContent = 'Camera/mic permission is needed to start a call.';
+    createBtn.disabled = false;
+    return;
+  }
+
+  peer = new Peer(roomId);
+
+  peer.on('open', (id) => {
+    const link = window.location.origin + window.location.pathname + '?room=' + id;
+    linkBox.style.display = 'block';
+    linkBox.textContent = link;
+    copyRow.style.display = 'flex';
+    statusEl.textContent = 'Waiting for the other person to join…';
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(link).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => (copyBtn.textContent = 'Copy Link'), 1500);
+      });
+    });
+  });
+
+  peer.on('call', (call) => {
+    call.answer(localStream);
+    wireCallEvents(call);
+    showCallUI();
+  });
+
+  peer.on('error', (err) => {
+    console.error(err);
+    statusEl.textContent = 'Connection error: ' + err.type;
+  });
+});
+
+// ---- GUEST FLOW ----
+const roomFromUrl = getRoomFromUrl();
+if (roomFromUrl) {
+  setupCard.style.display = 'none';
+  joinCard.style.display = 'block';
+
+  acceptBtn.addEventListener('click', async () => {
+    acceptBtn.disabled = true;
+    declineBtn.disabled = true;
+    joinStatus.textContent = 'Connecting…';
+
+    try {
+      await getLocalStream();
+    } catch (e) {
+      joinStatus.textContent = 'Camera/mic permission is needed to join.';
+      acceptBtn.disabled = false;
+      declineBtn.disabled = false;
+      return;
+    }
+
+    peer = new Peer();
+    peer.on('open', () => {
+      const call = peer.call(roomFromUrl, localStream);
+      wireCallEvents(call);
+      showCallUI();
+    });
+    peer.on('error', (err) => {
+      console.error(err);
+      joinStatus.textContent = 'Could not connect: ' + err.type + '. The host may be offline.';
+      acceptBtn.disabled = false;
+      declineBtn.disabled = false;
+    });
+  });
+
+  declineBtn.addEventListener('click', () => {
+    window.location.href = window.location.pathname;
+  });
+}
+
+// ---- CONTROLS ----
+muteBtn.addEventListener('click', () => {
+  if (!localStream) return;
+  micOn = !micOn;
+  localStream.getAudioTracks().forEach(t => (t.enabled = micOn));
+  muteBtn.textContent = micOn ? 'Mute' : 'Unmute';
+});
+
+camBtn.addEventListener('click', () => {
+  if (!localStream) return;
+  camOn = !camOn;
+  localStream.getVideoTracks().forEach(t => (t.enabled = camOn));
+  camBtn.textContent = camOn ? 'Camera Off' : 'Camera On';
+});
+
+endBtn.addEventListener('click', endCall);
+</script>
+
+</body>
+</html>
