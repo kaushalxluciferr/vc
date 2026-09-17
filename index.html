@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>QuickCall — Video Calling</title>
+<title>QuickCall — Group Video Calling</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
   :root {
@@ -27,18 +27,13 @@
     flex-direction: column;
     align-items: center;
   }
-  header {
-    width: 100%;
-    padding: 16px 20px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-  }
+  header { width: 100%; padding: 16px 20px; text-align: center; border-bottom: 1px solid var(--border); }
   header h1 { margin: 0; font-size: 19px; font-weight: 600; }
   header span { color: var(--accent); }
 
   main {
     width: 100%;
-    max-width: 680px;
+    max-width: 780px;
     padding: 20px 14px 50px;
     display: flex;
     flex-direction: column;
@@ -73,6 +68,7 @@
   .btn-secondary { background: #262a35; color: var(--text); }
   .btn-secondary:hover { background: #303543; }
   .btn-secondary.active { background: var(--accent); color: white; }
+  .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
   #linkBox {
     display: none;
@@ -88,51 +84,46 @@
 
   .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
 
-  #videos {
-    width: 100%;
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .video-wrap {
-    position: relative;
-    width: 100%;
-    background: #000;
-    border-radius: 14px;
-    overflow: hidden;
-    aspect-ratio: 16/10;
-  }
-  video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .label {
-    position: absolute;
-    bottom: 8px;
-    left: 10px;
-    background: rgba(0,0,0,0.5);
-    padding: 3px 9px;
-    border-radius: 6px;
-    font-size: 12px;
-  }
-  #localWrap {
-    position: absolute;
-    width: 24%;
-    max-width: 110px;
-    min-width: 64px;
-    bottom: 12px;
-    right: 12px;
-    border: 2px solid var(--border);
-    z-index: 2;
-    aspect-ratio: 3/4;
-  }
-  #remoteWrap { position: relative; }
+  #callArea { width: 100%; display: none; flex-direction: column; gap: 12px; }
+  #participantCount { font-size: 12.5px; color: var(--muted); text-align: center; }
 
-  #controls {
-    display: none;
-    gap: 10px;
-    margin-top: 2px;
-    flex-wrap: wrap;
-    justify-content: center;
+  #videoGrid {
     width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
   }
+  .tile {
+    position: relative;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+  }
+  .tile video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tile-label {
+    position: absolute;
+    bottom: 6px;
+    left: 8px;
+    background: rgba(0,0,0,0.55);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+  }
+  .pip-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 10.5px;
+    cursor: pointer;
+  }
+
+  #controls { display: none; gap: 10px; margin-top: 2px; flex-wrap: wrap; justify-content: center; width: 100%; }
   #status { font-size: 13px; color: var(--muted); margin-top: 6px; }
   #callMsg { font-size: 12.5px; color: var(--muted); text-align: center; width: 100%; min-height: 16px; }
   .id-badge { font-size: 12px; color: var(--muted); margin-top: 4px; }
@@ -149,40 +140,19 @@
     gap: 10px;
   }
   #chatPanel.active { display: flex; }
-  #chatMessages {
-    max-height: 200px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding-right: 4px;
-  }
-  .chat-msg {
-    font-size: 13px;
-    padding: 7px 11px;
-    border-radius: 10px;
-    max-width: 82%;
-    word-break: break-word;
-    line-height: 1.4;
-  }
+  #chatMessages { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px; }
+  .chat-msg { font-size: 13px; padding: 7px 11px; border-radius: 10px; max-width: 82%; word-break: break-word; line-height: 1.4; }
   .chat-msg.me { align-self: flex-end; background: var(--accent); color: #fff; }
   .chat-msg.them { align-self: flex-start; background: #20242e; }
   .chat-msg .sender { display: block; font-size: 10.5px; opacity: 0.75; margin-bottom: 2px; }
   .chat-input-row { display: flex; gap: 8px; }
   .chat-input-row input {
-    flex: 1;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: #10121a;
-    color: var(--text);
-    font-size: 14px;
-    min-width: 0;
+    flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: #10121a; color: var(--text); font-size: 14px; min-width: 0;
   }
   .chat-input-row input:focus { outline: 1px solid var(--accent); }
   .chat-note { font-size: 11px; color: var(--muted); text-align: center; margin: 0; }
 
-  /* ---- Mobile responsiveness ---- */
   @media (max-width: 480px) {
     header { padding: 12px 14px; }
     header h1 { font-size: 17px; }
@@ -191,8 +161,9 @@
     .card h2 { font-size: 15px; }
     .card p { font-size: 13px; }
     button { padding: 10px 14px; font-size: 13.5px; }
-    #localWrap { width: 26%; max-width: 84px; min-width: 56px; bottom: 8px; right: 8px; }
-    .label { font-size: 10.5px; padding: 2px 7px; }
+    #videoGrid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 6px; }
+    .tile-label { font-size: 10px; padding: 2px 6px; }
+    .pip-btn { font-size: 9.5px; padding: 3px 6px; }
     #controls { gap: 8px; }
     #chatMessages { max-height: 160px; }
     .chat-msg { font-size: 12.5px; max-width: 90%; }
@@ -212,8 +183,8 @@
 <main>
 
   <div class="card" id="setupCard">
-    <h2>Start or Join a Video Call</h2>
-    <p>Click below to create a call, then send the link that appears to the person you want to call. When they open it and accept, you'll both be connected.</p>
+    <h2>Start a Group Video Call</h2>
+    <p>Click below to create a call, then send the link to everyone you want on the call. Anyone who opens it and accepts joins the same call — not just one person.</p>
     <div class="row">
       <button class="btn-primary" id="createBtn">Create Call & Get Link</button>
     </div>
@@ -226,7 +197,7 @@
 
   <div class="card" id="joinCard" style="display:none;">
     <h2>Incoming Call Invitation</h2>
-    <p>Someone has sent you a QuickCall link. Accept to join the video call.</p>
+    <p>Someone has sent you a QuickCall link. Accept to join the group video call.</p>
     <div class="row">
       <button class="btn-primary" id="acceptBtn">Accept & Join</button>
       <button class="btn-secondary" id="declineBtn">Decline</button>
@@ -234,47 +205,48 @@
     <div id="joinStatus" class="id-badge"></div>
   </div>
 
-  <div id="videos">
-    <div id="remoteWrap" class="video-wrap">
-      <video id="remoteVideo" autoplay playsinline></video>
-      <div class="label">Them</div>
-      <div id="localWrap" class="video-wrap">
-        <video id="localVideo" autoplay playsinline muted></video>
-        <div class="label">You</div>
-      </div>
+  <div id="callArea">
+    <div id="participantCount"></div>
+    <div id="videoGrid"></div>
+    <div id="controls">
+      <button class="btn-secondary" id="muteBtn">Mute</button>
+      <button class="btn-secondary" id="camBtn">Camera Off</button>
+      <button class="btn-secondary" id="shareBtn">Share Screen</button>
+      <button class="btn-secondary" id="chatToggleBtn">Chat</button>
+      <button class="btn-danger" id="endBtn">End Call</button>
     </div>
-  </div>
+    <div id="callMsg"></div>
 
-  <div id="controls">
-    <button class="btn-secondary" id="muteBtn">Mute</button>
-    <button class="btn-secondary" id="camBtn">Camera Off</button>
-    <button class="btn-secondary" id="shareBtn">Share Screen</button>
-    <button class="btn-secondary" id="chatToggleBtn">Chat</button>
-    <button class="btn-danger" id="endBtn">End Call</button>
-  </div>
-  <div id="callMsg"></div>
-
-  <div id="chatPanel">
-    <p class="chat-note">Messages are temporary — not saved anywhere, and disappear when the call ends.</p>
-    <div id="chatMessages"></div>
-    <div class="chat-input-row">
-      <input type="text" id="chatInput" placeholder="Type a message…" maxlength="500" />
-      <button class="btn-primary" id="chatSendBtn">Send</button>
+    <div id="chatPanel">
+      <p class="chat-note">Messages are temporary — not saved anywhere, and disappear when the call ends.</p>
+      <div id="chatMessages"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Type a message…" maxlength="500" />
+        <button class="btn-primary" id="chatSendBtn">Send</button>
+      </div>
     </div>
   </div>
 
 </main>
 
 <script>
+// ---------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------
 let peer = null;
-let localStream = null;
-let currentCall = null;
-let dataConn = null;
+let myId = null;
+let localStream = null;      // camera + mic
+let outgoingStream = null;   // whatever we're currently sending (camera or screen)
+let screenStream = null;
+let isScreenSharing = false;
 let micOn = true;
 let camOn = true;
-let isScreenSharing = false;
-let screenStream = null;
+const peers = {};  // remoteId -> { call, conn }
+const tiles = {};  // 'self' or remoteId -> { wrap, video }
 
+// ---------------------------------------------------------------------
+// DOM refs
+// ---------------------------------------------------------------------
 const setupCard = document.getElementById('setupCard');
 const joinCard = document.getElementById('joinCard');
 const createBtn = document.getElementById('createBtn');
@@ -285,20 +257,20 @@ const statusEl = document.getElementById('status');
 const joinStatus = document.getElementById('joinStatus');
 const acceptBtn = document.getElementById('acceptBtn');
 const declineBtn = document.getElementById('declineBtn');
-const videosEl = document.getElementById('videos');
+const callArea = document.getElementById('callArea');
+const videoGrid = document.getElementById('videoGrid');
+const participantCount = document.getElementById('participantCount');
 const controlsEl = document.getElementById('controls');
-const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
 const muteBtn = document.getElementById('muteBtn');
 const camBtn = document.getElementById('camBtn');
 const shareBtn = document.getElementById('shareBtn');
 const chatToggleBtn = document.getElementById('chatToggleBtn');
 const endBtn = document.getElementById('endBtn');
+const callMsg = document.getElementById('callMsg');
 const chatPanel = document.getElementById('chatPanel');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
-const callMsg = document.getElementById('callMsg');
 
 function showCallMsg(text, timeout) {
   callMsg.textContent = text;
@@ -311,55 +283,178 @@ function showCallMsg(text, timeout) {
 function genId() {
   return 'qc-' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
 }
-
 function getRoomFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('room');
+  return new URLSearchParams(window.location.search).get('room');
+}
+function shortLabel(id) {
+  return 'User ' + id.replace('qc-', '').slice(-4).toUpperCase();
 }
 
 async function getLocalStream() {
   if (localStream) return localStream;
   localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-  localVideo.srcObject = localStream;
   return localStream;
+}
+
+// ---------------------------------------------------------------------
+// Video tiles (grid)
+// ---------------------------------------------------------------------
+function ensureTile(id, label) {
+  if (tiles[id]) return tiles[id];
+  const wrap = document.createElement('div');
+  wrap.className = 'tile';
+
+  const video = document.createElement('video');
+  video.autoplay = true;
+  video.playsInline = true;
+  if (id === 'self') video.muted = true;
+  wrap.appendChild(video);
+
+  const labelEl = document.createElement('div');
+  labelEl.className = 'tile-label';
+  labelEl.textContent = label;
+  wrap.appendChild(labelEl);
+
+  if (id !== 'self') {
+    const pipBtn = document.createElement('button');
+    pipBtn.className = 'pip-btn';
+    pipBtn.textContent = 'PiP';
+    pipBtn.title = 'Picture-in-picture';
+    pipBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      try {
+        if (!document.pictureInPictureEnabled || !video.requestPictureInPicture) {
+          showCallMsg('Picture-in-picture is not supported on this browser.', 3500);
+          return;
+        }
+        if (document.pictureInPictureElement === video) {
+          await document.exitPictureInPicture();
+        } else {
+          await video.requestPictureInPicture();
+        }
+      } catch (err) {
+        showCallMsg('Could not enter picture-in-picture mode.', 3500);
+      }
+    });
+    wrap.appendChild(pipBtn);
+  }
+
+  videoGrid.appendChild(wrap);
+  tiles[id] = { wrap, video };
+  updateParticipantCount();
+  return tiles[id];
+}
+
+function removeTile(id) {
+  const t = tiles[id];
+  if (t) { t.wrap.remove(); delete tiles[id]; }
+  updateParticipantCount();
+}
+
+function updateParticipantCount() {
+  const n = Object.keys(tiles).length;
+  participantCount.textContent = n <= 1 ? 'Just you so far — share the link to bring others in.' : n + ' people in the call';
 }
 
 function showCallUI() {
   setupCard.style.display = 'none';
   joinCard.style.display = 'none';
-  videosEl.style.display = 'flex';
+  callArea.style.display = 'flex';
   controlsEl.style.display = 'flex';
 }
 
-function wireCallEvents(call) {
-  currentCall = call;
+// ---------------------------------------------------------------------
+// Mesh networking (every participant connects to every other participant)
+// ---------------------------------------------------------------------
+function registerCall(id, call) {
+  if (!peers[id]) peers[id] = {};
+  peers[id].call = call;
   call.on('stream', (remoteStream) => {
-    remoteVideo.srcObject = remoteStream;
+    const tile = ensureTile(id, shortLabel(id));
+    tile.video.srcObject = remoteStream;
   });
-  call.on('close', endCall);
-  call.on('error', (err) => {
-    console.error(err);
-    statusEl.textContent = 'Call error: ' + err;
+  call.on('close', () => { removeTile(id); delete peers[id]; });
+  call.on('error', (err) => console.error('call error', err));
+}
+
+function registerConn(id, conn) {
+  if (!peers[id]) peers[id] = {};
+  peers[id].conn = conn;
+  conn.on('data', (msg) => handleMessage(id, msg));
+  conn.on('close', () => { delete peers[id]; });
+}
+
+function connectToPeer(id, sendJoinMsg) {
+  if (!id || id === myId || peers[id]) return;
+  const conn = peer.connect(id);
+  registerConn(id, conn);
+  if (sendJoinMsg) {
+    conn.on('open', () => conn.send({ type: 'join', id: myId }));
+  }
+  const call = peer.call(id, outgoingStream);
+  registerCall(id, call);
+}
+
+function sendTo(id, msg) {
+  const p = peers[id];
+  if (p && p.conn && p.conn.open) p.conn.send(msg);
+}
+
+function broadcast(msg, excludeIds) {
+  excludeIds = excludeIds || [];
+  Object.keys(peers).forEach((id) => {
+    if (!excludeIds.includes(id)) sendTo(id, msg);
   });
 }
 
-function setupDataConnection(conn) {
-  dataConn = conn;
-  conn.on('data', (data) => {
-    appendMessage('them', String(data));
+function handleMessage(fromId, msg) {
+  if (!msg || !msg.type) return;
+  if (msg.type === 'chat') {
+    appendMessage(fromId, msg.text);
+  } else if (msg.type === 'join') {
+    // We're the bootstrap peer this newcomer connected to first.
+    const roster = Object.keys(peers).filter((pid) => pid !== fromId);
+    sendTo(fromId, { type: 'roster', peers: roster });
+    broadcast({ type: 'new-peer', id: fromId }, [fromId]);
+  } else if (msg.type === 'roster') {
+    (msg.peers || []).forEach((id) => connectToPeer(id, false));
+  } else if (msg.type === 'new-peer') {
+    connectToPeer(msg.id, false);
+  }
+}
+
+function initPeerEvents() {
+  peer.on('call', (call) => {
+    call.answer(outgoingStream);
+    registerCall(call.peer, call);
   });
-  conn.on('close', () => { dataConn = null; });
+  peer.on('connection', (conn) => {
+    registerConn(conn.peer, conn);
+  });
+  peer.on('error', (err) => {
+    console.error(err);
+    showCallMsg('Connection error: ' + err.type, 4000);
+  });
+  peer.on('disconnected', () => {
+    showCallMsg('Lost connection to the signaling server — trying to reconnect…', 4000);
+    peer.reconnect();
+  });
 }
 
 function endCall() {
-  if (currentCall) currentCall.close();
-  if (dataConn) dataConn.close();
-  if (localStream) localStream.getTracks().forEach(t => t.stop());
-  if (screenStream) screenStream.getTracks().forEach(t => t.stop());
+  Object.values(peers).forEach((p) => {
+    if (p.call) p.call.close();
+    if (p.conn) p.conn.close();
+  });
+  if (peer) peer.destroy();
+  if (localStream) localStream.getTracks().forEach((t) => t.stop());
+  if (screenStream) screenStream.getTracks().forEach((t) => t.stop());
   window.location.href = window.location.pathname;
 }
 
-// ---- HOST FLOW ----
+// ---------------------------------------------------------------------
+// HOST FLOW
+// ---------------------------------------------------------------------
 createBtn.addEventListener('click', async () => {
   createBtn.disabled = true;
   statusEl.textContent = 'Setting up your call…';
@@ -372,15 +467,18 @@ createBtn.addEventListener('click', async () => {
     createBtn.disabled = false;
     return;
   }
+  outgoingStream = localStream;
 
   peer = new Peer(roomId);
+  initPeerEvents();
 
   peer.on('open', (id) => {
+    myId = id;
     const link = window.location.origin + window.location.pathname + '?room=' + id;
     linkBox.style.display = 'block';
     linkBox.textContent = link;
     copyRow.style.display = 'flex';
-    statusEl.textContent = 'Waiting for the other person to join…';
+    statusEl.textContent = 'Call created — send the link below to as many people as you like.';
 
     copyBtn.addEventListener('click', () => {
       navigator.clipboard.writeText(link).then(() => {
@@ -388,25 +486,16 @@ createBtn.addEventListener('click', async () => {
         setTimeout(() => (copyBtn.textContent = 'Copy Link'), 1500);
       });
     });
-  });
 
-  peer.on('call', (call) => {
-    call.answer(localStream);
-    wireCallEvents(call);
+    const selfTile = ensureTile('self', 'You');
+    selfTile.video.srcObject = outgoingStream;
     showCallUI();
-  });
-
-  peer.on('connection', (conn) => {
-    setupDataConnection(conn);
-  });
-
-  peer.on('error', (err) => {
-    console.error(err);
-    statusEl.textContent = 'Connection error: ' + err.type;
   });
 });
 
-// ---- GUEST FLOW ----
+// ---------------------------------------------------------------------
+// GUEST FLOW
+// ---------------------------------------------------------------------
 const roomFromUrl = getRoomFromUrl();
 if (roomFromUrl) {
   setupCard.style.display = 'none';
@@ -425,22 +514,17 @@ if (roomFromUrl) {
       declineBtn.disabled = false;
       return;
     }
+    outgoingStream = localStream;
 
     peer = new Peer();
-    peer.on('open', () => {
-      const call = peer.call(roomFromUrl, localStream);
-      wireCallEvents(call);
+    initPeerEvents();
 
-      const conn = peer.connect(roomFromUrl);
-      conn.on('open', () => setupDataConnection(conn));
-
+    peer.on('open', (id) => {
+      myId = id;
+      const selfTile = ensureTile('self', 'You');
+      selfTile.video.srcObject = outgoingStream;
       showCallUI();
-    });
-    peer.on('error', (err) => {
-      console.error(err);
-      joinStatus.textContent = 'Could not connect: ' + err.type + '. The host may be offline.';
-      acceptBtn.disabled = false;
-      declineBtn.disabled = false;
+      connectToPeer(roomFromUrl, true);
     });
   });
 
@@ -449,45 +533,47 @@ if (roomFromUrl) {
   });
 }
 
-// ---- MEDIA CONTROLS ----
+// ---------------------------------------------------------------------
+// Mic / camera controls
+// ---------------------------------------------------------------------
 muteBtn.addEventListener('click', () => {
   if (!localStream) return;
   micOn = !micOn;
-  localStream.getAudioTracks().forEach(t => (t.enabled = micOn));
+  localStream.getAudioTracks().forEach((t) => (t.enabled = micOn));
   muteBtn.textContent = micOn ? 'Mute' : 'Unmute';
 });
 
 camBtn.addEventListener('click', () => {
   if (!localStream || isScreenSharing) return;
   camOn = !camOn;
-  localStream.getVideoTracks().forEach(t => (t.enabled = camOn));
+  localStream.getVideoTracks().forEach((t) => (t.enabled = camOn));
   camBtn.textContent = camOn ? 'Camera Off' : 'Camera On';
 });
 
 endBtn.addEventListener('click', endCall);
 
-// ---- SCREEN SHARING ----
-function replaceOutgoingVideoTrack(newTrack) {
-  if (currentCall && currentCall.peerConnection) {
-    const sender = currentCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-    if (sender) sender.replaceTrack(newTrack);
-  }
-}
-
+// ---------------------------------------------------------------------
+// Screen sharing (per-user, broadcast to everyone in the mesh)
+// ---------------------------------------------------------------------
 const screenShareSupported = !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
 
 if (!screenShareSupported) {
-  // Most mobile browsers (iOS Safari/Chrome, and many Android browsers) don't
-  // expose screen capture to web pages at all. Disable the button up front
-  // instead of letting it fail silently when tapped.
   shareBtn.disabled = true;
-  shareBtn.style.opacity = '0.5';
   shareBtn.title = 'Screen sharing is not supported on this browser';
+}
+
+function replaceOutgoingVideoTrackAll(newTrack) {
+  Object.values(peers).forEach((p) => {
+    if (p.call && p.call.peerConnection) {
+      const sender = p.call.peerConnection.getSenders().find((s) => s.track && s.track.kind === 'video');
+      if (sender) sender.replaceTrack(newTrack);
+    }
+  });
 }
 
 shareBtn.addEventListener('click', async () => {
   if (!screenShareSupported) {
-    showCallMsg('Screen sharing isn\'t supported on this browser. It generally only works on desktop Chrome, Edge, or Firefox (and Chrome on some newer Android devices).', 6000);
+    showCallMsg('Screen sharing isn\'t supported on this browser. It works reliably on desktop Chrome, Edge, or Firefox.', 6000);
     return;
   }
 
@@ -503,11 +589,17 @@ shareBtn.addEventListener('click', async () => {
       return;
     }
     const screenTrack = screenStream.getVideoTracks()[0];
-    replaceOutgoingVideoTrack(screenTrack);
-    localVideo.srcObject = screenStream;
+    const audioTracks = localStream ? localStream.getAudioTracks() : [];
+    outgoingStream = new MediaStream([screenTrack, ...audioTracks]);
+
+    replaceOutgoingVideoTrackAll(screenTrack);
+    const selfTile = tiles['self'];
+    if (selfTile) selfTile.video.srcObject = outgoingStream;
+
     isScreenSharing = true;
     shareBtn.textContent = 'Stop Sharing';
     shareBtn.classList.add('active');
+    camBtn.disabled = true;
     screenTrack.onended = stopScreenShare;
   } else {
     stopScreenShare();
@@ -516,32 +608,38 @@ shareBtn.addEventListener('click', async () => {
 
 function stopScreenShare() {
   if (screenStream) {
-    screenStream.getTracks().forEach(t => t.stop());
+    screenStream.getTracks().forEach((t) => t.stop());
     screenStream = null;
   }
   if (localStream) {
     const camTrack = localStream.getVideoTracks()[0];
     if (camTrack) {
-      replaceOutgoingVideoTrack(camTrack);
-      localVideo.srcObject = localStream;
+      outgoingStream = localStream;
+      replaceOutgoingVideoTrackAll(camTrack);
+      const selfTile = tiles['self'];
+      if (selfTile) selfTile.video.srcObject = outgoingStream;
     }
   }
   isScreenSharing = false;
   shareBtn.textContent = 'Share Screen';
   shareBtn.classList.remove('active');
+  camBtn.disabled = false;
 }
 
-// ---- CHAT (temporary, in-memory only) ----
+// ---------------------------------------------------------------------
+// Chat (temporary, in-memory, peer-to-peer broadcast — no server storage)
+// ---------------------------------------------------------------------
 function escapeHtml(str) {
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
 }
 
-function appendMessage(who, text) {
+function appendMessage(fromId, text) {
+  const isMe = fromId === 'me';
   const div = document.createElement('div');
-  div.className = 'chat-msg ' + (who === 'me' ? 'me' : 'them');
-  const label = who === 'me' ? 'You' : 'Them';
+  div.className = 'chat-msg ' + (isMe ? 'me' : 'them');
+  const label = isMe ? 'You' : shortLabel(fromId);
   div.innerHTML = '<span class="sender">' + label + '</span>' + escapeHtml(text);
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -551,20 +649,33 @@ function sendChatMessage() {
   const text = chatInput.value.trim();
   if (!text) return;
   appendMessage('me', text);
-  if (dataConn && dataConn.open) dataConn.send(text);
+  broadcast({ type: 'chat', text });
   chatInput.value = '';
 }
 
 chatSendBtn.addEventListener('click', sendChatMessage);
-chatInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') sendChatMessage();
-});
-
+chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 chatToggleBtn.addEventListener('click', () => {
   chatPanel.classList.toggle('active');
   chatToggleBtn.classList.toggle('active');
   if (chatPanel.classList.contains('active')) chatInput.focus();
 });
+
+// ---------------------------------------------------------------------
+// Keep videos playing when the tab/app is backgrounded then resumed
+// (mobile Chrome often pauses <video> rendering in the background;
+// this resumes playback the moment the page becomes visible again).
+// ---------------------------------------------------------------------
+function resumeAllVideos() {
+  Object.values(tiles).forEach((t) => {
+    if (t.video && t.video.paused && t.video.srcObject) {
+      t.video.play().catch(() => {});
+    }
+  });
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) resumeAllVideos(); });
+window.addEventListener('pageshow', resumeAllVideos);
+window.addEventListener('focus', resumeAllVideos);
 </script>
 
 </body>
