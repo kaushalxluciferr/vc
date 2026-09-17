@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>QuickCall — Video Calling</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
@@ -29,48 +29,50 @@
   }
   header {
     width: 100%;
-    padding: 18px 24px;
+    padding: 16px 20px;
     text-align: center;
     border-bottom: 1px solid var(--border);
   }
-  header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+  header h1 { margin: 0; font-size: 19px; font-weight: 600; }
   header span { color: var(--accent); }
 
   main {
     width: 100%;
-    max-width: 640px;
-    padding: 24px 16px 60px;
+    max-width: 680px;
+    padding: 20px 14px 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
   }
 
   .card {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 24px;
+    padding: 22px;
     width: 100%;
     text-align: center;
   }
-  .card h2 { margin-top: 0; font-size: 17px; font-weight: 600; }
-  .card p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .card h2 { margin-top: 0; font-size: 16px; font-weight: 600; }
+  .card p { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 
   button {
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 600;
-    padding: 12px 22px;
+    padding: 11px 18px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
     transition: background 0.15s ease;
+    white-space: nowrap;
   }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover { background: var(--accent-hover); }
   .btn-danger { background: var(--danger); color: white; }
   .btn-secondary { background: #262a35; color: var(--text); }
   .btn-secondary:hover { background: #303543; }
+  .btn-secondary.active { background: var(--accent); color: white; }
 
   #linkBox {
     display: none;
@@ -110,12 +112,93 @@
     border-radius: 6px;
     font-size: 12px;
   }
-  #localWrap { position: absolute; width: 34%; max-width: 160px; bottom: 12px; right: 12px; border: 2px solid var(--border); z-index: 2; aspect-ratio: 3/4; }
+  #localWrap {
+    position: absolute;
+    width: 32%;
+    max-width: 150px;
+    bottom: 12px;
+    right: 12px;
+    border: 2px solid var(--border);
+    z-index: 2;
+    aspect-ratio: 3/4;
+  }
   #remoteWrap { position: relative; }
 
-  #controls { display: none; gap: 12px; margin-top: 4px; }
+  #controls {
+    display: none;
+    gap: 10px;
+    margin-top: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
   #status { font-size: 13px; color: var(--muted); margin-top: 6px; }
   .id-badge { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ---- Chat panel ---- */
+  #chatPanel {
+    display: none;
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #chatPanel.active { display: flex; }
+  #chatMessages {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-right: 4px;
+  }
+  .chat-msg {
+    font-size: 13px;
+    padding: 7px 11px;
+    border-radius: 10px;
+    max-width: 82%;
+    word-break: break-word;
+    line-height: 1.4;
+  }
+  .chat-msg.me { align-self: flex-end; background: var(--accent); color: #fff; }
+  .chat-msg.them { align-self: flex-start; background: #20242e; }
+  .chat-msg .sender { display: block; font-size: 10.5px; opacity: 0.75; margin-bottom: 2px; }
+  .chat-input-row { display: flex; gap: 8px; }
+  .chat-input-row input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #10121a;
+    color: var(--text);
+    font-size: 14px;
+    min-width: 0;
+  }
+  .chat-input-row input:focus { outline: 1px solid var(--accent); }
+  .chat-note { font-size: 11px; color: var(--muted); text-align: center; margin: 0; }
+
+  /* ---- Mobile responsiveness ---- */
+  @media (max-width: 480px) {
+    header { padding: 12px 14px; }
+    header h1 { font-size: 17px; }
+    main { padding: 14px 8px 36px; gap: 12px; }
+    .card { padding: 16px; }
+    .card h2 { font-size: 15px; }
+    .card p { font-size: 13px; }
+    button { padding: 10px 14px; font-size: 13.5px; }
+    #localWrap { width: 38%; max-width: 120px; bottom: 8px; right: 8px; }
+    .label { font-size: 10.5px; padding: 2px 7px; }
+    #controls { gap: 8px; }
+    #chatMessages { max-height: 160px; }
+    .chat-msg { font-size: 12.5px; max-width: 90%; }
+  }
+
+  @media (max-width: 360px) {
+    #controls button { flex: 1 1 calc(50% - 8px); }
+  }
 </style>
 </head>
 <body>
@@ -163,7 +246,18 @@
   <div id="controls">
     <button class="btn-secondary" id="muteBtn">Mute</button>
     <button class="btn-secondary" id="camBtn">Camera Off</button>
+    <button class="btn-secondary" id="shareBtn">Share Screen</button>
+    <button class="btn-secondary" id="chatToggleBtn">Chat</button>
     <button class="btn-danger" id="endBtn">End Call</button>
+  </div>
+
+  <div id="chatPanel">
+    <p class="chat-note">Messages are temporary — not saved anywhere, and disappear when the call ends.</p>
+    <div id="chatMessages"></div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Type a message…" maxlength="500" />
+      <button class="btn-primary" id="chatSendBtn">Send</button>
+    </div>
   </div>
 
 </main>
@@ -172,8 +266,11 @@
 let peer = null;
 let localStream = null;
 let currentCall = null;
+let dataConn = null;
 let micOn = true;
 let camOn = true;
+let isScreenSharing = false;
+let screenStream = null;
 
 const setupCard = document.getElementById('setupCard');
 const joinCard = document.getElementById('joinCard');
@@ -191,7 +288,13 @@ const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
 const muteBtn = document.getElementById('muteBtn');
 const camBtn = document.getElementById('camBtn');
+const shareBtn = document.getElementById('shareBtn');
+const chatToggleBtn = document.getElementById('chatToggleBtn');
 const endBtn = document.getElementById('endBtn');
+const chatPanel = document.getElementById('chatPanel');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSendBtn = document.getElementById('chatSendBtn');
 
 function genId() {
   return 'qc-' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
@@ -228,11 +331,19 @@ function wireCallEvents(call) {
   });
 }
 
+function setupDataConnection(conn) {
+  dataConn = conn;
+  conn.on('data', (data) => {
+    appendMessage('them', String(data));
+  });
+  conn.on('close', () => { dataConn = null; });
+}
+
 function endCall() {
   if (currentCall) currentCall.close();
-  if (localStream) {
-    localStream.getTracks().forEach(t => t.stop());
-  }
+  if (dataConn) dataConn.close();
+  if (localStream) localStream.getTracks().forEach(t => t.stop());
+  if (screenStream) screenStream.getTracks().forEach(t => t.stop());
   window.location.href = window.location.pathname;
 }
 
@@ -273,6 +384,10 @@ createBtn.addEventListener('click', async () => {
     showCallUI();
   });
 
+  peer.on('connection', (conn) => {
+    setupDataConnection(conn);
+  });
+
   peer.on('error', (err) => {
     console.error(err);
     statusEl.textContent = 'Connection error: ' + err.type;
@@ -303,6 +418,10 @@ if (roomFromUrl) {
     peer.on('open', () => {
       const call = peer.call(roomFromUrl, localStream);
       wireCallEvents(call);
+
+      const conn = peer.connect(roomFromUrl);
+      conn.on('open', () => setupDataConnection(conn));
+
       showCallUI();
     });
     peer.on('error', (err) => {
@@ -318,7 +437,7 @@ if (roomFromUrl) {
   });
 }
 
-// ---- CONTROLS ----
+// ---- MEDIA CONTROLS ----
 muteBtn.addEventListener('click', () => {
   if (!localStream) return;
   micOn = !micOn;
@@ -327,13 +446,92 @@ muteBtn.addEventListener('click', () => {
 });
 
 camBtn.addEventListener('click', () => {
-  if (!localStream) return;
+  if (!localStream || isScreenSharing) return;
   camOn = !camOn;
   localStream.getVideoTracks().forEach(t => (t.enabled = camOn));
   camBtn.textContent = camOn ? 'Camera Off' : 'Camera On';
 });
 
 endBtn.addEventListener('click', endCall);
+
+// ---- SCREEN SHARING ----
+function replaceOutgoingVideoTrack(newTrack) {
+  if (currentCall && currentCall.peerConnection) {
+    const sender = currentCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+    if (sender) sender.replaceTrack(newTrack);
+  }
+}
+
+shareBtn.addEventListener('click', async () => {
+  if (!isScreenSharing) {
+    try {
+      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+    } catch (e) {
+      return; // user cancelled the share picker
+    }
+    const screenTrack = screenStream.getVideoTracks()[0];
+    replaceOutgoingVideoTrack(screenTrack);
+    localVideo.srcObject = screenStream;
+    isScreenSharing = true;
+    shareBtn.textContent = 'Stop Sharing';
+    shareBtn.classList.add('active');
+    screenTrack.onended = stopScreenShare;
+  } else {
+    stopScreenShare();
+  }
+});
+
+function stopScreenShare() {
+  if (screenStream) {
+    screenStream.getTracks().forEach(t => t.stop());
+    screenStream = null;
+  }
+  if (localStream) {
+    const camTrack = localStream.getVideoTracks()[0];
+    if (camTrack) {
+      replaceOutgoingVideoTrack(camTrack);
+      localVideo.srcObject = localStream;
+    }
+  }
+  isScreenSharing = false;
+  shareBtn.textContent = 'Share Screen';
+  shareBtn.classList.remove('active');
+}
+
+// ---- CHAT (temporary, in-memory only) ----
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function appendMessage(who, text) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (who === 'me' ? 'me' : 'them');
+  const label = who === 'me' ? 'You' : 'Them';
+  div.innerHTML = '<span class="sender">' + label + '</span>' + escapeHtml(text);
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function sendChatMessage() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  appendMessage('me', text);
+  if (dataConn && dataConn.open) dataConn.send(text);
+  chatInput.value = '';
+}
+
+chatSendBtn.addEventListener('click', sendChatMessage);
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendChatMessage();
+});
+
+chatToggleBtn.addEventListener('click', () => {
+  chatPanel.classList.toggle('active');
+  chatToggleBtn.classList.toggle('active');
+  if (chatPanel.classList.contains('active')) chatInput.focus();
+});
 </script>
 
 </body>
