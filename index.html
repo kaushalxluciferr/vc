@@ -114,8 +114,9 @@
   }
   #localWrap {
     position: absolute;
-    width: 32%;
-    max-width: 150px;
+    width: 24%;
+    max-width: 110px;
+    min-width: 64px;
     bottom: 12px;
     right: 12px;
     border: 2px solid var(--border);
@@ -133,6 +134,7 @@
     width: 100%;
   }
   #status { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  #callMsg { font-size: 12.5px; color: var(--muted); text-align: center; width: 100%; min-height: 16px; }
   .id-badge { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
   /* ---- Chat panel ---- */
@@ -189,7 +191,7 @@
     .card h2 { font-size: 15px; }
     .card p { font-size: 13px; }
     button { padding: 10px 14px; font-size: 13.5px; }
-    #localWrap { width: 38%; max-width: 120px; bottom: 8px; right: 8px; }
+    #localWrap { width: 26%; max-width: 84px; min-width: 56px; bottom: 8px; right: 8px; }
     .label { font-size: 10.5px; padding: 2px 7px; }
     #controls { gap: 8px; }
     #chatMessages { max-height: 160px; }
@@ -204,7 +206,7 @@
 <body>
 
 <header>
-  <h1>Quick<span>Call</span></h1>
+  <h1>Ankush<span>Call</span></h1>
 </header>
 
 <main>
@@ -250,6 +252,7 @@
     <button class="btn-secondary" id="chatToggleBtn">Chat</button>
     <button class="btn-danger" id="endBtn">End Call</button>
   </div>
+  <div id="callMsg"></div>
 
   <div id="chatPanel">
     <p class="chat-note">Messages are temporary — not saved anywhere, and disappear when the call ends.</p>
@@ -295,6 +298,15 @@ const chatPanel = document.getElementById('chatPanel');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
+const callMsg = document.getElementById('callMsg');
+
+function showCallMsg(text, timeout) {
+  callMsg.textContent = text;
+  if (timeout) {
+    clearTimeout(showCallMsg._t);
+    showCallMsg._t = setTimeout(() => { callMsg.textContent = ''; }, timeout);
+  }
+}
 
 function genId() {
   return 'qc-' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
@@ -462,12 +474,33 @@ function replaceOutgoingVideoTrack(newTrack) {
   }
 }
 
+const screenShareSupported = !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
+
+if (!screenShareSupported) {
+  // Most mobile browsers (iOS Safari/Chrome, and many Android browsers) don't
+  // expose screen capture to web pages at all. Disable the button up front
+  // instead of letting it fail silently when tapped.
+  shareBtn.disabled = true;
+  shareBtn.style.opacity = '0.5';
+  shareBtn.title = 'Screen sharing is not supported on this browser';
+}
+
 shareBtn.addEventListener('click', async () => {
+  if (!screenShareSupported) {
+    showCallMsg('Screen sharing isn\'t supported on this browser. It generally only works on desktop Chrome, Edge, or Firefox (and Chrome on some newer Android devices).', 6000);
+    return;
+  }
+
   if (!isScreenSharing) {
     try {
       screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
     } catch (e) {
-      return; // user cancelled the share picker
+      if (e && e.name === 'NotAllowedError') {
+        showCallMsg('Screen share was cancelled or permission was denied.', 4000);
+      } else {
+        showCallMsg('Could not start screen sharing on this device.', 4000);
+      }
+      return;
     }
     const screenTrack = screenStream.getVideoTracks()[0];
     replaceOutgoingVideoTrack(screenTrack);
