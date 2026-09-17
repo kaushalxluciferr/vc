@@ -114,6 +114,7 @@
     height: 100%;
     display: block;
     background: #000;
+    object-fit: cover;
   }
   .tile-label {
     position: absolute;
@@ -159,48 +160,32 @@
     top: 0; left: 0; width: 100%; height: 100%;
     border-radius: 0;
   }
-  #videoGrid[data-count="1"] .tile.remote video {
-    object-fit: contain;
-  }
+  #videoGrid[data-count="1"] .tile.remote video { object-fit: contain; }
 
-  /* 2 remotes: side by side, half/half */
-  #videoGrid[data-count="2"] .tile.remote {
-    top: 0; height: 100%; width: 50%;
-  }
+  /* 2 remotes: side by side */
+  #videoGrid[data-count="2"] .tile.remote { top: 0; height: 100%; width: 50%; }
   #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { left: 0; }
   #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { left: 50%; }
-  #videoGrid[data-count="2"] .tile.remote video {
-    object-fit: contain;
-  }
+  #videoGrid[data-count="2"] .tile.remote video { object-fit: contain; }
 
-  /* 3 remotes: 2 up, 1 down (bottom-left) */
-  #videoGrid[data-count="3"] .tile.remote {
-    width: 50%; height: 50%;
-  }
+  /* 3 remotes: 2 up, 1 down */
+  #videoGrid[data-count="3"] .tile.remote { width: 50%; height: 50%; }
   #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
   #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
   #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; }
-  #videoGrid[data-count="3"] .tile.remote video {
-    object-fit: contain;
-  }
+  #videoGrid[data-count="3"] .tile.remote video { object-fit: contain; }
 
   /* 4 remotes: 2x2 */
-  #videoGrid[data-count="4"] .tile.remote {
-    width: 50%; height: 50%;
-  }
+  #videoGrid[data-count="4"] .tile.remote { width: 50%; height: 50%; }
   #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
   #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
   #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; }
   #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top: 50%; left: 50%; }
-  #videoGrid[data-count="4"] .tile.remote video {
-    object-fit: contain;
-  }
+  #videoGrid[data-count="4"] .tile.remote video { object-fit: contain; }
 
   /* 5-6 remotes: 3x2 grid */
   #videoGrid[data-count="5"] .tile.remote,
-  #videoGrid[data-count="6"] .tile.remote {
-    width: 33.333%; height: 50%;
-  }
+  #videoGrid[data-count="6"] .tile.remote { width: 33.333%; height: 50%; }
   #videoGrid[data-count="5"] .tile.remote:nth-of-type(1),
   #videoGrid[data-count="6"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
   #videoGrid[data-count="5"] .tile.remote:nth-of-type(2),
@@ -213,16 +198,12 @@
   #videoGrid[data-count="6"] .tile.remote:nth-of-type(5) { top: 50%; left: 33.333%; }
   #videoGrid[data-count="6"] .tile.remote:nth-of-type(6) { top: 50%; left: 66.666%; }
   #videoGrid[data-count="5"] .tile.remote video,
-  #videoGrid[data-count="6"] .tile.remote video {
-    object-fit: contain;
-  }
+  #videoGrid[data-count="6"] .tile.remote video { object-fit: contain; }
 
   /* 7-9 remotes: 3x3 grid */
   #videoGrid[data-count="7"] .tile.remote,
   #videoGrid[data-count="8"] .tile.remote,
-  #videoGrid[data-count="9"] .tile.remote {
-    width: 33.333%; height: 33.333%;
-  }
+  #videoGrid[data-count="9"] .tile.remote { width: 33.333%; height: 33.333%; }
   #videoGrid[data-count="7"] .tile.remote:nth-of-type(1),
   #videoGrid[data-count="8"] .tile.remote:nth-of-type(1),
   #videoGrid[data-count="9"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
@@ -249,9 +230,7 @@
   #videoGrid[data-count="9"] .tile.remote:nth-of-type(9) { top: 66.666%; left: 66.666%; }
   #videoGrid[data-count="7"] .tile.remote video,
   #videoGrid[data-count="8"] .tile.remote video,
-  #videoGrid[data-count="9"] .tile.remote video {
-    object-fit: contain;
-  }
+  #videoGrid[data-count="9"] .tile.remote video { object-fit: contain; }
 
   /* 10+ remotes: scrollable grid */
   #videoGrid[data-count="10"],
@@ -272,14 +251,10 @@
   }
   #videoGrid[data-count="10"] .tile.remote video,
   #videoGrid[data-count="11"] .tile.remote video,
-  #videoGrid[data-count="12"] .tile.remote video {
-    object-fit: contain;
-  }
+  #videoGrid[data-count="12"] .tile.remote video { object-fit: contain; }
   #videoGrid[data-count="10"] .tile.self-tile,
   #videoGrid[data-count="11"] .tile.self-tile,
-  #videoGrid[data-count="12"] .tile.self-tile {
-    position: fixed;
-  }
+  #videoGrid[data-count="12"] .tile.self-tile { position: fixed; }
 
   #controls { display: none; gap: 10px; margin-top: 2px; flex-wrap: wrap; justify-content: center; width: 100%; }
   #status { font-size: 13px; color: var(--muted); margin-top: 6px; }
@@ -319,55 +294,35 @@
     .card p { font-size: 13px; }
     button { padding: 12px 16px; font-size: 14px; }
 
-    /* On mobile, use portrait-friendly aspect for the video grid */
     #videoGrid {
       aspect-ratio: 9/16;
       max-height: 60vh;
     }
 
-    /* Mobile: 1 remote fills screen */
     #videoGrid[data-count="1"] .tile.remote {
       top: 0; left: 0; width: 100%; height: 100%;
       border-radius: 0;
     }
-    #videoGrid[data-count="1"] .tile.remote video {
-      object-fit: contain;
-    }
+    #videoGrid[data-count="1"] .tile.remote video { object-fit: contain; }
 
-    /* Mobile: 2 remotes — TOP/BOTTOM split (half & half vertically) */
-    #videoGrid[data-count="2"] .tile.remote {
-      left: 0; width: 100%; height: 50%;
-    }
+    #videoGrid[data-count="2"] .tile.remote { left: 0; width: 100%; height: 50%; }
     #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { top: 0; }
     #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { top: 50%; }
-    #videoGrid[data-count="2"] .tile.remote video {
-      object-fit: contain;
-    }
+    #videoGrid[data-count="2"] .tile.remote video { object-fit: contain; }
 
-    /* Mobile: 3 remotes — first two on top half, third bottom half */
-    #videoGrid[data-count="3"] .tile.remote {
-      width: 50%; height: 50%;
-    }
+    #videoGrid[data-count="3"] .tile.remote { width: 50%; height: 50%; }
     #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
     #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
     #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; width: 100%; }
-    #videoGrid[data-count="3"] .tile.remote video {
-      object-fit: contain;
-    }
+    #videoGrid[data-count="3"] .tile.remote video { object-fit: contain; }
 
-    /* Mobile: 4 remotes — 2x2 grid */
-    #videoGrid[data-count="4"] .tile.remote {
-      width: 50%; height: 50%;
-    }
+    #videoGrid[data-count="4"] .tile.remote { width: 50%; height: 50%; }
     #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
     #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
     #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; }
     #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top: 50%; left: 50%; }
-    #videoGrid[data-count="4"] .tile.remote video {
-      object-fit: contain;
-    }
+    #videoGrid[data-count="4"] .tile.remote video { object-fit: contain; }
 
-    /* Mobile: 5+ remotes — 3 columns, auto rows, scrollable */
     #videoGrid[data-count="5"],
     #videoGrid[data-count="6"],
     #videoGrid[data-count="7"],
@@ -401,9 +356,7 @@
     #videoGrid[data-count="9"] .tile.remote video,
     #videoGrid[data-count="10"] .tile.remote video,
     #videoGrid[data-count="11"] .tile.remote video,
-    #videoGrid[data-count="12"] .tile.remote video {
-      object-fit: contain;
-    }
+    #videoGrid[data-count="12"] .tile.remote video { object-fit: contain; }
     #videoGrid[data-count="5"] .tile.self-tile,
     #videoGrid[data-count="6"] .tile.self-tile,
     #videoGrid[data-count="7"] .tile.self-tile,
@@ -411,11 +364,8 @@
     #videoGrid[data-count="9"] .tile.self-tile,
     #videoGrid[data-count="10"] .tile.self-tile,
     #videoGrid[data-count="11"] .tile.self-tile,
-    #videoGrid[data-count="12"] .tile.self-tile {
-      position: fixed;
-    }
+    #videoGrid[data-count="12"] .tile.self-tile { position: fixed; }
 
-    /* Mobile: self tile smaller */
     .tile.self-tile {
       width: 30%;
       max-width: 110px;
@@ -424,7 +374,6 @@
       right: 8px;
     }
 
-    /* Mobile controls: 2x2 grid + full-width End Call */
     #controls {
       display: flex;
       flex-wrap: wrap;
@@ -437,9 +386,7 @@
       padding: 14px 8px;
       font-size: 14px;
     }
-    #controls #endBtn {
-      flex: 1 1 100%;
-    }
+    #controls #endBtn { flex: 1 1 100%; }
   }
 
   @media (max-width: 360px) {
@@ -450,6 +397,25 @@
     #chatMessages { max-height: 160px; }
     .chat-msg { font-size: 12.5px; max-width: 90%; }
   }
+
+  /* Tap-to-play overlay for mobile autoplay unlock */
+  #tapOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    padding: 20px;
+  }
+  #tapOverlay.show { display: flex; }
+  #tapOverlay .icon { font-size: 48px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -507,6 +473,11 @@
 
 </main>
 
+<div id="tapOverlay">
+  <div class="icon">📹</div>
+  <div>Tap anywhere to enable video</div>
+</div>
+
 <script>
 // ---------------------------------------------------------------------
 // State
@@ -519,8 +490,11 @@ let screenStream = null;
 let isScreenSharing = false;
 let micOn = true;
 let camOn = true;
+let videoUnlocked = false;
 const peers = {};
 const tiles = {};
+
+const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
 // ---------------------------------------------------------------------
 // DOM refs
@@ -549,6 +523,7 @@ const chatPanel = document.getElementById('chatPanel');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
+const tapOverlay = document.getElementById('tapOverlay');
 
 function hideInviteLink() {
   linkBox.style.display = 'none';
@@ -575,13 +550,49 @@ function shortLabel(id) {
 }
 
 async function getLocalStream() {
-  if (localStream) return localStream;
+  if (localStream && localStream.getTracks().some(t => t.readyState === 'live')) {
+    return localStream;
+  }
+  // Reset stale stream
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
   localStream = await navigator.mediaDevices.getUserMedia({
     video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-    audio: true
+    audio: { echoCancellation: true, noiseSuppression: true }
   });
   return localStream;
 }
+
+// ---------------------------------------------------------------------
+// Safe video play helper — handles mobile autoplay restrictions
+// ---------------------------------------------------------------------
+function safePlay(videoEl) {
+  if (!videoEl) return;
+  const p = videoEl.play();
+  if (p && typeof p.catch === 'function') {
+    p.catch(() => {
+      // Autoplay blocked — show tap overlay
+      if (!videoUnlocked) {
+        tapOverlay.classList.add('show');
+      }
+    });
+  }
+}
+
+function unlockVideos() {
+  videoUnlocked = true;
+  tapOverlay.classList.remove('show');
+  Object.values(tiles).forEach((t) => {
+    if (t.video && t.video.paused && t.video.srcObject) {
+      safePlay(t.video);
+    }
+  });
+}
+
+tapOverlay.addEventListener('click', unlockVideos);
+tapOverlay.addEventListener('touchstart', unlockVideos);
 
 // ---------------------------------------------------------------------
 // Dynamic grid layout
@@ -606,8 +617,12 @@ function ensureTile(id, label) {
   video.playsInline = true;
   video.setAttribute('playsinline', '');
   video.setAttribute('webkit-playsinline', '');
-  video.setAttribute('muted', id === 'self' ? 'true' : 'false');
-  if (id === 'self') video.muted = true;
+  video.setAttribute('autoplay', '');
+  video.controls = false;
+  if (id === 'self') {
+    video.muted = true;
+    video.setAttribute('muted', '');
+  }
   wrap.appendChild(video);
 
   const labelEl = document.createElement('div');
@@ -648,7 +663,11 @@ function ensureTile(id, label) {
 
 function removeTile(id) {
   const t = tiles[id];
-  if (t) { t.wrap.remove(); delete tiles[id]; }
+  if (t) {
+    try { t.video.srcObject = null; } catch (e) {}
+    t.wrap.remove();
+    delete tiles[id];
+  }
   updateParticipantCount();
   updateGridLayout();
 }
@@ -665,69 +684,19 @@ function showCallUI() {
   controlsEl.style.display = 'flex';
 }
 
-// ---------------------------------------------------------------------
-// Picture-in-Picture for local camera when page is hidden / minimized
-// ---------------------------------------------------------------------
-let localPipVideo = null;
-
-function setupLocalPip() {
-  // Create a hidden video element to receive the local stream for PiP
-  if (localPipVideo) return;
-  localPipVideo = document.createElement('video');
-  localPipVideo.muted = true;
-  localPipVideo.playsInline = true;
-  localPipVideo.setAttribute('playsinline', '');
-  localPipVideo.style.position = 'fixed';
-  localPipVideo.style.width = '1px';
-  localPipVideo.style.height = '1px';
-  localPipVideo.style.opacity = '0';
-  localPipVideo.style.pointerEvents = 'none';
-  document.body.appendChild(localPipVideo);
-}
-
-async function enableLocalPip() {
-  if (!localStream || !localPipVideo) return;
-  // Only available in browsers that support PiP
-  if (!document.pictureInPictureEnabled || !localPipVideo.requestPictureInPicture) return;
-
-  // Don't try if another element is already in PiP
-  if (document.pictureInPictureElement) return;
-
+function attachStreamToVideo(videoEl, stream) {
+  if (!videoEl || !stream) return;
   try {
-    localPipVideo.srcObject = localStream;
-    await localPipVideo.play().catch(() => {});
-    await localPipVideo.requestPictureInPicture();
+    videoEl.srcObject = stream;
   } catch (e) {
-    // Silently fail — user may not allow it or browser may not support it
-    console.warn('Local PiP could not be enabled:', e);
+    // Old browsers
+    try { videoEl.src = URL.createObjectURL(stream); } catch (e2) {}
   }
+  // Force play after metadata loads (mobile-safe)
+  const tryPlay = () => safePlay(videoEl);
+  videoEl.onloadedmetadata = tryPlay;
+  tryPlay();
 }
-
-async function disableLocalPip() {
-  try {
-    if (document.pictureInPictureElement && document.pictureInPictureElement === localPipVideo) {
-      await document.exitPictureInPicture();
-    }
-  } catch (e) { /* ignore */ }
-}
-
-// When page becomes hidden (user switches app / minimizes Chrome), enter PiP
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    // Page is hidden — try to enter PiP so camera keeps streaming
-    enableLocalPip();
-  } else {
-    // Page is visible again — exit PiP
-    disableLocalPip();
-    // Ensure all videos resume
-    resumeAllVideos();
-  }
-});
-
-// Also try PiP on pagehide (covers more mobile cases)
-window.addEventListener('pagehide', () => {
-  enableLocalPip();
-});
 
 // ---------------------------------------------------------------------
 // Mesh networking
@@ -735,33 +704,55 @@ window.addEventListener('pagehide', () => {
 function registerCall(id, call) {
   if (!peers[id]) peers[id] = {};
   peers[id].call = call;
+
   call.on('stream', (remoteStream) => {
     const tile = ensureTile(id, shortLabel(id));
-    tile.video.srcObject = remoteStream;
-    tile.video.load();
-    tile.video.play().catch(() => {});
+    attachStreamToVideo(tile.video, remoteStream);
     updateGridLayout();
+    // Hide invite link as soon as someone actually joins
+    hideInviteLink();
+    statusEl.textContent = '';
   });
-  call.on('close', () => { removeTile(id); delete peers[id]; });
-  call.on('error', (err) => console.error('call error', err));
+
+  call.on('close', () => { removeTile(id); if (peers[id]) delete peers[id].call; });
+  call.on('error', (err) => {
+    console.error('call error', err);
+    showCallMsg('Call error with a peer — they may have left.', 3500);
+    removeTile(id);
+  });
 }
 
 function registerConn(id, conn) {
   if (!peers[id]) peers[id] = {};
   peers[id].conn = conn;
   conn.on('data', (msg) => handleMessage(id, msg));
-  conn.on('close', () => { delete peers[id]; });
+  conn.on('close', () => { if (peers[id]) delete peers[id].conn; });
+  conn.on('error', (err) => console.error('conn error', err));
 }
 
-function connectToPeer(id, sendJoinMsg) {
+async function connectToPeer(id, sendJoinMsg) {
   if (!id || id === myId || peers[id]) return;
-  const conn = peer.connect(id);
+
+  // Data connection — both sides may open one, that's fine
+  const conn = peer.connect(id, { reliable: true });
   registerConn(id, conn);
   if (sendJoinMsg) {
     conn.on('open', () => conn.send({ type: 'join', id: myId }));
   }
-  const call = peer.call(id, outgoingStream);
-  registerCall(id, call);
+
+  // Ensure we actually have a local stream before calling
+  if (!outgoingStream) {
+    try { outgoingStream = await getLocalStream(); }
+    catch (e) { console.error('No local stream for call', e); return; }
+  }
+
+  // Only the peer with the lexicographically smaller ID initiates the media call.
+  // This prevents both sides calling each other at the same time (glare).
+  if (myId && id && myId < id) {
+    const call = peer.call(id, outgoingStream);
+    if (call) registerCall(id, call);
+  }
+  // Otherwise we wait for the other side to call us (handled in peer.on('call')).
 }
 
 function sendTo(id, msg) {
@@ -792,13 +783,24 @@ function handleMessage(fromId, msg) {
 }
 
 function initPeerEvents() {
-  peer.on('call', (call) => {
-    call.answer(outgoingStream);
-    registerCall(call.peer, call);
+  peer.on('call', async (call) => {
+    // Ensure we have a stream ready to answer with
+    if (!outgoingStream) {
+      try { outgoingStream = await getLocalStream(); }
+      catch (e) { console.error('Cannot answer without stream', e); return; }
+    }
+    try {
+      call.answer(outgoingStream);
+      registerCall(call.peer, call);
+    } catch (e) {
+      console.error('answer error', e);
+    }
   });
+
   peer.on('connection', (conn) => {
     registerConn(conn.peer, conn);
   });
+
   peer.on('error', (err) => {
     console.error(err);
     const msg = 'Connection error: ' + err.type + '. Check your internet connection and try again.';
@@ -812,21 +814,21 @@ function initPeerEvents() {
       declineBtn.disabled = false;
     }
   });
+
   peer.on('disconnected', () => {
     showCallMsg('Lost connection to the signaling server — trying to reconnect…', 4000);
-    peer.reconnect();
+    try { peer.reconnect(); } catch (e) {}
   });
 }
 
 function endCall() {
   Object.values(peers).forEach((p) => {
-    if (p.call) p.call.close();
-    if (p.conn) p.conn.close();
+    try { if (p.call) p.call.close(); } catch (e) {}
+    try { if (p.conn) p.conn.close(); } catch (e) {}
   });
-  if (peer) peer.destroy();
+  try { if (peer) peer.destroy(); } catch (e) {}
   if (localStream) localStream.getTracks().forEach((t) => t.stop());
   if (screenStream) screenStream.getTracks().forEach((t) => t.stop());
-  disableLocalPip();
   window.location.href = window.location.pathname;
 }
 
@@ -846,7 +848,6 @@ createBtn.addEventListener('click', async () => {
     return;
   }
   outgoingStream = localStream;
-  setupLocalPip();
 
   peer = new Peer(roomId);
   initPeerEvents();
@@ -864,16 +865,24 @@ createBtn.addEventListener('click', async () => {
     copyRow.style.display = 'flex';
     statusEl.textContent = 'Call created — send the link below to as many people as you like.';
 
-    copyBtn.addEventListener('click', () => {
+    copyBtn.onclick = () => {
       navigator.clipboard.writeText(link).then(() => {
         copyBtn.textContent = 'Copied!';
         setTimeout(() => (copyBtn.textContent = 'Copy Link'), 1500);
+      }).catch(() => {
+        // Fallback for older mobile browsers
+        const ta = document.createElement('textarea');
+        ta.value = link;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); copyBtn.textContent = 'Copied!'; } catch (e) {}
+        document.body.removeChild(ta);
+        setTimeout(() => (copyBtn.textContent = 'Copy Link'), 1500);
       });
-    });
+    };
 
     const selfTile = ensureTile('self', 'You');
-    selfTile.video.srcObject = outgoingStream;
-    selfTile.video.play().catch(() => {});
+    attachStreamToVideo(selfTile.video, outgoingStream);
 
     joinCard.style.display = 'none';
     createBtn.style.display = 'none';
@@ -905,7 +914,6 @@ if (roomFromUrl) {
       return;
     }
     outgoingStream = localStream;
-    setupLocalPip();
 
     peer = new Peer();
     initPeerEvents();
@@ -918,8 +926,7 @@ if (roomFromUrl) {
       clearTimeout(openTimeout);
       myId = id;
       const selfTile = ensureTile('self', 'You');
-      selfTile.video.srcObject = outgoingStream;
-      selfTile.video.play().catch(() => {});
+      attachStreamToVideo(selfTile.video, outgoingStream);
       showCallUI();
       updateGridLayout();
       connectToPeer(roomFromUrl, true);
@@ -951,7 +958,7 @@ camBtn.addEventListener('click', () => {
 endBtn.addEventListener('click', endCall);
 
 // ---------------------------------------------------------------------
-// Screen sharing (works on desktop AND mobile)
+// Screen sharing
 // ---------------------------------------------------------------------
 const screenShareSupported = !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
 
@@ -964,7 +971,7 @@ function replaceOutgoingVideoTrackAll(newTrack) {
   Object.values(peers).forEach((p) => {
     if (p.call && p.call.peerConnection) {
       const sender = p.call.peerConnection.getSenders().find((s) => s.track && s.track.kind === 'video');
-      if (sender) sender.replaceTrack(newTrack);
+      if (sender) sender.replaceTrack(newTrack).catch(err => console.warn('replaceTrack', err));
     }
   });
 }
@@ -977,7 +984,6 @@ shareBtn.addEventListener('click', async () => {
 
   if (!isScreenSharing) {
     try {
-      // Mobile-friendly: try with explicit constraints; some browsers need this
       screenStream = await navigator.mediaDevices.getDisplayMedia({
         video: { cursor: 'always' },
         audio: false
@@ -987,7 +993,7 @@ shareBtn.addEventListener('click', async () => {
       if (e && e.name === 'NotAllowedError') {
         showCallMsg('Screen share was cancelled or permission was denied.', 4000);
       } else if (e && e.name === 'NotSupportedError') {
-        showCallMsg('Screen sharing is not supported on this device. On Android, try Chrome 107+ and enable it from the share menu.', 5000);
+        showCallMsg('Screen sharing is not supported on this device.', 5000);
       } else if (e && e.name === 'TypeError') {
         showCallMsg('Screen sharing needs a secure context (HTTPS). Please use the https:// link.', 5000);
       } else {
@@ -1003,8 +1009,7 @@ shareBtn.addEventListener('click', async () => {
     replaceOutgoingVideoTrackAll(screenTrack);
     const selfTile = tiles['self'];
     if (selfTile) {
-      selfTile.video.srcObject = outgoingStream;
-      selfTile.video.play().catch(() => {});
+      attachStreamToVideo(selfTile.video, outgoingStream);
     }
 
     isScreenSharing = true;
@@ -1012,11 +1017,6 @@ shareBtn.addEventListener('click', async () => {
     shareBtn.classList.add('active');
     camBtn.disabled = true;
     screenTrack.onended = stopScreenShare;
-
-    // When sharing screen on mobile, the local PiP should show the screen
-    if (localPipVideo) {
-      localPipVideo.srcObject = outgoingStream;
-    }
   } else {
     stopScreenShare();
   }
@@ -1034,11 +1034,7 @@ function stopScreenShare() {
       replaceOutgoingVideoTrackAll(camTrack);
       const selfTile = tiles['self'];
       if (selfTile) {
-        selfTile.video.srcObject = outgoingStream;
-        selfTile.video.play().catch(() => {});
-      }
-      if (localPipVideo) {
-        localPipVideo.srcObject = outgoingStream;
+        attachStreamToVideo(selfTile.video, outgoingStream);
       }
     }
   }
@@ -1084,48 +1080,32 @@ chatToggleBtn.addEventListener('click', () => {
 });
 
 // ---------------------------------------------------------------------
-// Keep videos playing
+// Keep videos playing — resilient to mobile backgrounding
 // ---------------------------------------------------------------------
 function resumeAllVideos() {
   Object.values(tiles).forEach((t) => {
-    if (t.video && t.video.srcObject) {
-      if (t.video.paused) {
-        t.video.play().catch(() => {});
-      }
+    if (t.video && t.video.srcObject && t.video.paused) {
+      safePlay(t.video);
     }
   });
 }
-window.addEventListener('pageshow', resumeAllVideos);
-window.addEventListener('focus', resumeAllVideos);
+
 window.addEventListener('pageshow', (event) => {
-  if (event.persisted) {
-    resumeAllVideos();
-  }
+  if (event.persisted) resumeAllVideos();
+  resumeAllVideos();
+});
+window.addEventListener('focus', resumeAllVideos);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) resumeAllVideos();
 });
 
-// ---------------------------------------------------------------------
-// Hide invite link when a remote peer joins
-// ---------------------------------------------------------------------
-const originalRegisterCall = registerCall;
-registerCall = function(id, call) {
-  originalRegisterCall(id, call);
-  call.on('stream', () => {
-    hideInviteLink();
-    statusEl.textContent = '';
-  });
-};
+// Unlock autoplay on first user gesture anywhere
+['touchstart', 'click', 'keydown'].forEach(evt => {
+  document.body.addEventListener(evt, () => {
+    if (!videoUnlocked) unlockVideos();
+  }, { once: true, passive: true });
+});
 
-const originalRegisterConn = registerConn;
-registerConn = function(id, conn) {
-  originalRegisterConn(id, conn);
-  conn.on('open', () => {
-    hideInviteLink();
-    statusEl.textContent = '';
-  });
-};
-
-// Ensure remote video plays on mobile after user tap
-document.addEventListener('click', resumeAllVideos, { once: false });
 </script>
 
 </body>
