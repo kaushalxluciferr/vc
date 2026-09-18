@@ -17,31 +17,50 @@
     --border: #262a35;
   }
   * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
+  body {
+    margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg); color: var(--text); min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  body { display: flex; flex-direction: column; align-items: center; }
   header { width: 100%; padding: 16px 20px; text-align: center; border-bottom: 1px solid var(--border); }
   header h1 { margin: 0; font-size: 19px; font-weight: 600; }
   header span { color: var(--accent); }
 
   main {
-    width: 100%; max-width: 1200px; padding: 20px 14px 50px;
-    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    width: 100%;
+    max-width: 780px;
+    padding: 20px 14px 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
   }
 
   .card {
-    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
-    padding: 22px; width: 100%; text-align: center;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    width: 100%;
+    text-align: center;
   }
   .card h2 { margin-top: 0; font-size: 16px; font-weight: 600; }
   .card p { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 
   button {
-    font-size: 14.5px; font-weight: 600; padding: 11px 18px; border-radius: 10px;
-    border: none; cursor: pointer; transition: background 0.15s ease; white-space: nowrap;
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 11px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
   }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover { background: var(--accent-hover); }
@@ -52,8 +71,14 @@
   .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
   #linkBox, #inviteLinkBox {
-    margin-top: 14px; background: #10121a; border: 1px solid var(--border); border-radius: 10px;
-    padding: 12px; word-break: break-all; font-size: 13px; color: var(--accent);
+    margin-top: 14px;
+    background: #10121a;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    word-break: break-all;
+    font-size: 13px;
+    color: var(--accent);
   }
   #linkBox { display: none; }
 
@@ -63,67 +88,28 @@
   #participantCount { font-size: 12.5px; color: var(--muted); text-align: center; }
 
   #videoGrid {
-    width: 100%; position: relative; background: #000; border-radius: 14px;
-    overflow: hidden; aspect-ratio: 16/9; max-height: 70vh;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
   }
-  .tile { position: absolute; background: #111; border-radius: 10px; overflow: hidden; transition: all 0.2s ease; }
-  .tile video { width: 100%; height: 100%; display: block; background: #000; object-fit: contain; }
+  .tile {
+    position: relative;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+  }
+  .tile video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tile-label {
-    position: absolute; bottom: 6px; left: 8px; background: rgba(0,0,0,0.6);
-    padding: 3px 8px; border-radius: 6px; font-size: 11px; z-index: 2;
+    position: absolute; bottom: 6px; left: 8px;
+    background: rgba(0,0,0,0.55); padding: 3px 8px; border-radius: 6px; font-size: 11px;
   }
   .pip-btn {
-    position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.6); color: #fff;
-    border: none; border-radius: 6px; padding: 4px 8px; font-size: 10.5px; cursor: pointer; z-index: 2;
+    position: absolute; top: 6px; right: 6px;
+    background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 6px;
+    padding: 4px 8px; font-size: 10.5px; cursor: pointer;
   }
-  .tile.self-tile {
-    width: 22%; max-width: 160px; min-width: 90px; aspect-ratio: 4/3; bottom: 12px; right: 12px;
-    border: 2px solid var(--accent); z-index: 10; box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-  }
-
-  #videoGrid[data-count="1"] .tile.remote { top:0; left:0; width:100%; height:100%; border-radius:0; }
-
-  #videoGrid[data-count="2"] .tile.remote { top:0; height:100%; width:50%; }
-  #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { left:0; }
-  #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { left:50%; }
-
-  #videoGrid[data-count="3"] .tile.remote { width:50%; height:50%; }
-  #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top:0; left:0; }
-  #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top:0; left:50%; }
-  #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top:50%; left:0; }
-
-  #videoGrid[data-count="4"] .tile.remote { width:50%; height:50%; }
-  #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top:0; left:0; }
-  #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top:0; left:50%; }
-  #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top:50%; left:0; }
-  #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top:50%; left:50%; }
-
-  #videoGrid[data-count="5"] .tile.remote, #videoGrid[data-count="6"] .tile.remote { width:33.333%; height:50%; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(1), #videoGrid[data-count="6"] .tile.remote:nth-of-type(1) { top:0; left:0; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(2), #videoGrid[data-count="6"] .tile.remote:nth-of-type(2) { top:0; left:33.333%; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(3), #videoGrid[data-count="6"] .tile.remote:nth-of-type(3) { top:0; left:66.666%; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(4), #videoGrid[data-count="6"] .tile.remote:nth-of-type(4) { top:50%; left:0; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(5), #videoGrid[data-count="6"] .tile.remote:nth-of-type(5) { top:50%; left:33.333%; }
-  #videoGrid[data-count="6"] .tile.remote:nth-of-type(6) { top:50%; left:66.666%; }
-
-  #videoGrid[data-count="7"] .tile.remote, #videoGrid[data-count="8"] .tile.remote, #videoGrid[data-count="9"] .tile.remote { width:33.333%; height:33.333%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(1), #videoGrid[data-count="8"] .tile.remote:nth-of-type(1), #videoGrid[data-count="9"] .tile.remote:nth-of-type(1) { top:0; left:0; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(2), #videoGrid[data-count="8"] .tile.remote:nth-of-type(2), #videoGrid[data-count="9"] .tile.remote:nth-of-type(2) { top:0; left:33.333%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(3), #videoGrid[data-count="8"] .tile.remote:nth-of-type(3), #videoGrid[data-count="9"] .tile.remote:nth-of-type(3) { top:0; left:66.666%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(4), #videoGrid[data-count="8"] .tile.remote:nth-of-type(4), #videoGrid[data-count="9"] .tile.remote:nth-of-type(4) { top:33.333%; left:0; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(5), #videoGrid[data-count="8"] .tile.remote:nth-of-type(5), #videoGrid[data-count="9"] .tile.remote:nth-of-type(5) { top:33.333%; left:33.333%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(6), #videoGrid[data-count="8"] .tile.remote:nth-of-type(6), #videoGrid[data-count="9"] .tile.remote:nth-of-type(6) { top:33.333%; left:66.666%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(7), #videoGrid[data-count="8"] .tile.remote:nth-of-type(7), #videoGrid[data-count="9"] .tile.remote:nth-of-type(7) { top:66.666%; left:0; }
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(8), #videoGrid[data-count="9"] .tile.remote:nth-of-type(8) { top:66.666%; left:33.333%; }
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(9) { top:66.666%; left:66.666%; }
-
-  #videoGrid[data-count="10"], #videoGrid[data-count="11"], #videoGrid[data-count="12"] {
-    display: flex; flex-wrap: wrap; aspect-ratio: auto; height: 70vh; overflow-y: auto;
-  }
-  #videoGrid[data-count="10"] .tile.remote, #videoGrid[data-count="11"] .tile.remote, #videoGrid[data-count="12"] .tile.remote {
-    position: relative; width: 25%; height: 33.333%;
-  }
-  #videoGrid[data-count="10"] .tile.self-tile, #videoGrid[data-count="11"] .tile.self-tile, #videoGrid[data-count="12"] .tile.self-tile { position: fixed; }
 
   #controls { display: none; gap: 10px; margin-top: 2px; flex-wrap: wrap; justify-content: center; width: 100%; }
   #status { font-size: 13px; color: var(--muted); margin-top: 6px; }
@@ -148,54 +134,23 @@
   .chat-input-row input:focus { outline: 1px solid var(--accent); }
   .chat-note, .side-note { font-size: 11px; color: var(--muted); text-align: center; margin: 0; }
 
-  @media (max-width: 640px) {
+  @media (max-width: 480px) {
+    header { padding: 12px 14px; }
+    header h1 { font-size: 17px; }
     main { padding: 14px 8px 36px; gap: 12px; }
     .card { padding: 16px; }
     .card h2 { font-size: 15px; }
     .card p { font-size: 13px; }
-    button { padding: 12px 16px; font-size: 14px; }
-    #videoGrid { aspect-ratio: 9/16; max-height: 60vh; }
-    #videoGrid[data-count="1"] .tile.remote { top:0; left:0; width:100%; height:100%; border-radius:0; }
-    #videoGrid[data-count="2"] .tile.remote { left:0; width:100%; height:50%; }
-    #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { top:0; }
-    #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { top:50%; }
-    #videoGrid[data-count="3"] .tile.remote { width:50%; height:50%; }
-    #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top:0; left:0; }
-    #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top:0; left:50%; }
-    #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top:50%; left:0; width:100%; }
-    #videoGrid[data-count="4"] .tile.remote { width:50%; height:50%; }
-    #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top:0; left:0; }
-    #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top:0; left:50%; }
-    #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top:50%; left:0; }
-    #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top:50%; left:50%; }
-    #videoGrid[data-count="5"], #videoGrid[data-count="6"], #videoGrid[data-count="7"],
-    #videoGrid[data-count="8"], #videoGrid[data-count="9"], #videoGrid[data-count="10"],
-    #videoGrid[data-count="11"], #videoGrid[data-count="12"] {
-      display: flex; flex-wrap: wrap; aspect-ratio: auto; height: 60vh; overflow-y: auto;
-    }
-    #videoGrid[data-count="5"] .tile.remote, #videoGrid[data-count="6"] .tile.remote,
-    #videoGrid[data-count="7"] .tile.remote, #videoGrid[data-count="8"] .tile.remote,
-    #videoGrid[data-count="9"] .tile.remote, #videoGrid[data-count="10"] .tile.remote,
-    #videoGrid[data-count="11"] .tile.remote, #videoGrid[data-count="12"] .tile.remote {
-      position: relative; width: 33.333%; height: 50%;
-    }
-    #videoGrid[data-count="5"] .tile.self-tile, #videoGrid[data-count="6"] .tile.self-tile,
-    #videoGrid[data-count="7"] .tile.self-tile, #videoGrid[data-count="8"] .tile.self-tile,
-    #videoGrid[data-count="9"] .tile.self-tile, #videoGrid[data-count="10"] .tile.self-tile,
-    #videoGrid[data-count="11"] .tile.self-tile, #videoGrid[data-count="12"] .tile.self-tile { position: fixed; }
-    .tile.self-tile { width: 30%; max-width: 110px; min-width: 70px; bottom: 8px; right: 8px; }
-    #controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-    #controls button { flex: 1 1 calc(50% - 8px); min-width: 0; padding: 14px 8px; font-size: 14px; }
-    #controls #endBtn { flex: 1 1 100%; }
-  }
-
-  @media (max-width: 360px) {
-    header { padding: 12px 14px; }
-    header h1 { font-size: 17px; }
+    button { padding: 10px 14px; font-size: 13.5px; }
+    #videoGrid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 6px; }
     .tile-label { font-size: 10px; padding: 2px 6px; }
     .pip-btn { font-size: 9.5px; padding: 3px 6px; }
+    #controls { gap: 8px; }
     #chatMessages { max-height: 160px; }
     .chat-msg { font-size: 12.5px; max-width: 90%; }
+  }
+  @media (max-width: 360px) {
+    #controls button { flex: 1 1 calc(50% - 8px); }
   }
 
   #tapOverlay {
@@ -240,7 +195,7 @@
 
   <div id="callArea">
     <div id="participantCount"></div>
-    <div id="videoGrid" data-count="0"></div>
+    <div id="videoGrid"></div>
     <div id="controls">
       <button class="btn-secondary" id="muteBtn">Mute</button>
       <button class="btn-secondary" id="camBtn">Camera Off</button>
@@ -276,27 +231,59 @@
 
 <script>
 // ---------------------------------------------------------------------
-// WebRTC connectivity config — STUN + a free public TURN relay.
+// WebRTC connectivity config.
 //
-// Two phones on cellular data (or different WiFi networks entirely) sit
-// behind NAT that STUN alone often can't punch through. Without a TURN
-// relay, the signaling/data connection can still succeed while media
-// (and sometimes the chat data-channel) never actually flows — which
-// looks exactly like "connected but black screen, messages don't send."
-// The TURN server below is a free public relay meant for small projects
-// like this. For heavy/production use, a paid TURN provider would be
-// more reliable.
+// IMPORTANT DESIGN CHOICE: a real test call between two phones on
+// different networks worked using PeerJS's *default* settings — which
+// use several Google STUN mirrors. An earlier version of this app
+// REPLACED that default list with a smaller custom one, which likely
+// hurt more than it helped. This version keeps ALL of PeerJS's default
+// STUN servers and only ADDS a TURN relay on top, as an extra safety
+// net for the harder NAT cases — never removing what already worked.
+//
+// The TURN entries are a free public relay (Open Relay Project). It's a
+// shared demo credential used across many tutorials, so it can get
+// overloaded. For guaranteed-reliable results, get your own free TURN
+// key (2 minutes, no card) and fill in METERED_DOMAIN / METERED_API_KEY
+// below — see the README. Without it, this still works standalone off
+// the default STUN servers for most network combinations, same as the
+// version that worked for you, with TURN as a bonus fallback.
 // ---------------------------------------------------------------------
-const ICE_CONFIG = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:global.stun.twilio.com:3478' },
-    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-  ]
-};
-const PEER_OPTS = { config: ICE_CONFIG };
+const METERED_DOMAIN = '';   // e.g. 'yourapp.metered.live' — optional, see README
+const METERED_API_KEY = ''; // your personal free API key — optional, see README
+
+const DEFAULT_STUN_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  { urls: 'stun:stun3.l.google.com:19302' },
+  { urls: 'stun:stun4.l.google.com:19302' },
+  { urls: 'stun:global.stun.twilio.com:3478' }
+];
+const FALLBACK_TURN_SERVERS = [
+  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+];
+
+async function buildIceConfig() {
+  let turnServers = FALLBACK_TURN_SERVERS;
+  if (METERED_DOMAIN && METERED_API_KEY) {
+    try {
+      const res = await fetch('https://' + METERED_DOMAIN + '/api/v1/turn/credentials?apiKey=' + METERED_API_KEY);
+      if (res.ok) {
+        const fresh = await res.json();
+        if (Array.isArray(fresh) && fresh.length) {
+          console.log('Using personal TURN credentials from metered.ca');
+          turnServers = fresh.concat(FALLBACK_TURN_SERVERS);
+        }
+      }
+    } catch (e) {
+      console.warn('Could not fetch personal TURN credentials, using shared demo TURN only.', e);
+    }
+  }
+  return { iceServers: DEFAULT_STUN_SERVERS.concat(turnServers) };
+}
 
 // ---------------------------------------------------------------------
 // State
@@ -366,13 +353,8 @@ function shortLabel(id) {
 }
 
 async function getLocalStream() {
-  if (localStream && localStream.getTracks().some((t) => t.readyState === 'live')) {
-    return localStream;
-  }
-  if (localStream) {
-    localStream.getTracks().forEach((t) => t.stop());
-    localStream = null;
-  }
+  if (localStream && localStream.getTracks().some((t) => t.readyState === 'live')) return localStream;
+  if (localStream) { localStream.getTracks().forEach((t) => t.stop()); localStream = null; }
   localStream = await navigator.mediaDevices.getUserMedia({
     video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
     audio: { echoCancellation: true, noiseSuppression: true }
@@ -381,18 +363,16 @@ async function getLocalStream() {
 }
 
 // ---------------------------------------------------------------------
-// Safe video play helper — handles mobile autoplay restrictions
+// Autoplay-safe video playback (handles mobile browsers blocking
+// autoplay until the user interacts with the page)
 // ---------------------------------------------------------------------
 function safePlay(videoEl) {
   if (!videoEl) return;
   const p = videoEl.play();
   if (p && typeof p.catch === 'function') {
-    p.catch(() => {
-      if (!videoUnlocked) tapOverlay.classList.add('show');
-    });
+    p.catch(() => { if (!videoUnlocked) tapOverlay.classList.add('show'); });
   }
 }
-
 function unlockVideos() {
   videoUnlocked = true;
   tapOverlay.classList.remove('show');
@@ -408,32 +388,25 @@ tapOverlay.addEventListener('touchstart', unlockVideos);
 
 function attachStreamToVideo(videoEl, stream) {
   if (!videoEl || !stream) return;
-  try { videoEl.srcObject = stream; }
-  catch (e) { try { videoEl.src = URL.createObjectURL(stream); } catch (e2) {} }
+  try { videoEl.srcObject = stream; } catch (e) { try { videoEl.src = URL.createObjectURL(stream); } catch (e2) {} }
   const tryPlay = () => safePlay(videoEl);
   videoEl.onloadedmetadata = tryPlay;
   tryPlay();
 }
 
 // ---------------------------------------------------------------------
-// Dynamic grid layout
+// Video tiles
 // ---------------------------------------------------------------------
-function updateGridLayout() {
-  const remoteCount = Object.keys(tiles).filter((id) => id !== 'self').length;
-  videoGrid.dataset.count = Math.min(remoteCount, 12);
-}
-
 function ensureTile(id, label) {
   if (tiles[id]) return tiles[id];
   const wrap = document.createElement('div');
-  wrap.className = 'tile ' + (id === 'self' ? 'self-tile' : 'remote');
+  wrap.className = 'tile';
 
   const video = document.createElement('video');
   video.autoplay = true;
   video.playsInline = true;
   video.setAttribute('playsinline', '');
   video.setAttribute('webkit-playsinline', '');
-  video.controls = false;
   if (id === 'self') video.muted = true;
   wrap.appendChild(video);
 
@@ -465,7 +438,6 @@ function ensureTile(id, label) {
 
   videoGrid.appendChild(wrap);
   tiles[id] = { wrap, video };
-  updateGridLayout();
   updateParticipantCount();
   return tiles[id];
 }
@@ -477,7 +449,6 @@ function removeTile(id) {
     t.wrap.remove();
     delete tiles[id];
   }
-  updateGridLayout();
   updateParticipantCount();
 }
 
@@ -506,7 +477,10 @@ function showCallUI() {
 function registerCall(id, call) {
   if (!peers[id]) peers[id] = {};
   peers[id].call = call;
+  let gotStream = false;
+
   call.on('stream', (remoteStream) => {
+    gotStream = true;
     const tile = ensureTile(id, shortLabel(id));
     attachStreamToVideo(tile.video, remoteStream);
   });
@@ -515,6 +489,23 @@ function registerCall(id, call) {
     console.error('call error', err);
     showCallMsg('Call error with a participant — they may have dropped.', 3500);
   });
+
+  if (call.peerConnection) {
+    const pc = call.peerConnection;
+    pc.addEventListener('iceconnectionstatechange', () => {
+      console.log('ICE state with', id, '→', pc.iceConnectionState);
+      if (pc.iceConnectionState === 'failed') {
+        showCallMsg('Could not connect media with a participant. Try switching networks, or set up a personal TURN key for reliability (see README).', 8000);
+      } else if (pc.iceConnectionState === 'disconnected') {
+        showCallMsg('Connection with a participant dropped — trying to recover…', 4000);
+      }
+    });
+    setTimeout(() => {
+      if (!gotStream && pc.iceConnectionState !== 'connected' && pc.iceConnectionState !== 'completed') {
+        showCallMsg('Still trying to connect video — this can take longer on some mobile networks…', 6000);
+      }
+    }, 8000);
+  }
 }
 
 function registerConn(id, conn) {
@@ -525,15 +516,14 @@ function registerConn(id, conn) {
   conn.on('error', (err) => console.error('conn error', err));
 }
 
-// Exactly one side of every pair places the actual media call — whichever
-// peer ID sorts first. This must be checked from BOTH directions (whoever
-// initiates the data connection, and whoever merely receives one), or a
-// pair can end up where neither side ever calls — which shows as a
-// permanent black screen even though signaling "succeeded".
+// Exactly one side of every pair places the media call — whichever peer
+// ID sorts first, alphabetically. This check runs from BOTH directions
+// (whoever connects, and whoever merely receives a connection) so a
+// pair can never end up where neither side calls.
 function maybeCall(id) {
   if (!id || id === myId) return;
   if (peers[id] && peers[id].call) return;
-  if (!(myId < id)) return; // the other side is responsible for calling
+  if (!(myId < id)) return;
   if (!outgoingStream) return;
   const call = peer.call(id, outgoingStream);
   if (call) registerCall(id, call);
@@ -543,9 +533,7 @@ function connectToPeer(id, sendJoinMsg) {
   if (!id || id === myId || (peers[id] && peers[id].conn)) return;
   const conn = peer.connect(id, { reliable: true });
   registerConn(id, conn);
-  if (sendJoinMsg) {
-    conn.on('open', () => conn.send({ type: 'join', id: myId }));
-  }
+  if (sendJoinMsg) conn.on('open', () => conn.send({ type: 'join', id: myId }));
   maybeCall(id);
 }
 
@@ -553,7 +541,6 @@ function sendTo(id, msg) {
   const p = peers[id];
   if (p && p.conn && p.conn.open) p.conn.send(msg);
 }
-
 function broadcast(msg, excludeIds) {
   excludeIds = excludeIds || [];
   Object.keys(peers).forEach((id) => { if (!excludeIds.includes(id)) sendTo(id, msg); });
@@ -580,16 +567,12 @@ function initPeerEvents() {
       try { outgoingStream = await getLocalStream(); }
       catch (e) { console.error('Cannot answer without stream', e); return; }
     }
-    try {
-      call.answer(outgoingStream);
-      registerCall(call.peer, call);
-    } catch (e) { console.error('answer error', e); }
+    try { call.answer(outgoingStream); registerCall(call.peer, call); }
+    catch (e) { console.error('answer error', e); }
   });
 
   peer.on('connection', (conn) => {
     registerConn(conn.peer, conn);
-    // The peer that connects to us might be the one whose ID means WE
-    // should place the call — check both directions here too.
     maybeCall(conn.peer);
   });
 
@@ -632,20 +615,20 @@ createBtn.addEventListener('click', async () => {
   statusEl.textContent = 'Setting up your call…';
   const roomId = genId();
 
-  try {
-    await getLocalStream();
-  } catch (e) {
+  try { await getLocalStream(); }
+  catch (e) {
     statusEl.textContent = 'Camera/mic permission is needed to start a call.';
     createBtn.disabled = false;
     return;
   }
   outgoingStream = localStream;
 
-  peer = new Peer(roomId, PEER_OPTS);
+  const iceConfig = await buildIceConfig();
+  peer = new Peer(roomId, { config: iceConfig });
   initPeerEvents();
 
   const openTimeout = setTimeout(() => {
-    statusEl.textContent = 'Still trying to connect… this is taking longer than usual. Some mobile data/WiFi networks block the connection this needs. Try switching networks, or refresh and try again.';
+    statusEl.textContent = 'Still trying to connect… this is taking longer than usual. Try switching networks, or refresh and try again.';
   }, 8000);
 
   peer.on('open', (id) => {
@@ -696,9 +679,8 @@ if (roomFromUrl) {
     declineBtn.disabled = true;
     joinStatus.textContent = 'Connecting…';
 
-    try {
-      await getLocalStream();
-    } catch (e) {
+    try { await getLocalStream(); }
+    catch (e) {
       joinStatus.textContent = 'Camera/mic permission is needed to join.';
       acceptBtn.disabled = false;
       declineBtn.disabled = false;
@@ -706,11 +688,12 @@ if (roomFromUrl) {
     }
     outgoingStream = localStream;
 
-    peer = new Peer(undefined, PEER_OPTS);
+    const iceConfig = await buildIceConfig();
+    peer = new Peer(undefined, { config: iceConfig });
     initPeerEvents();
 
     const openTimeout = setTimeout(() => {
-      joinStatus.textContent = 'Still trying to connect… this is taking longer than usual. Some mobile data/WiFi networks block the connection this needs. Try switching networks, or refresh and try again.';
+      joinStatus.textContent = 'Still trying to connect… this is taking longer than usual. Try switching networks, or refresh and try again.';
     }, 8000);
 
     peer.on('open', (id) => {
@@ -763,14 +746,12 @@ muteBtn.addEventListener('click', () => {
   localStream.getAudioTracks().forEach((t) => (t.enabled = micOn));
   muteBtn.textContent = micOn ? 'Mute' : 'Unmute';
 });
-
 camBtn.addEventListener('click', () => {
   if (!localStream || isScreenSharing) return;
   camOn = !camOn;
   localStream.getVideoTracks().forEach((t) => (t.enabled = camOn));
   camBtn.textContent = camOn ? 'Camera Off' : 'Camera On';
 });
-
 endBtn.addEventListener('click', endCall);
 
 // ---------------------------------------------------------------------
@@ -793,29 +774,24 @@ function replaceOutgoingVideoTrackAll(newTrack) {
 
 shareBtn.addEventListener('click', async () => {
   if (!screenShareSupported) {
-    showCallMsg('Screen sharing isn\'t supported on this browser/device. Apple blocks it entirely on iOS, and it\'s inconsistent on Android — it works reliably on desktop Chrome, Edge, or Firefox.', 7000);
+    showCallMsg('Screen sharing isn\'t supported on this browser/device. It works reliably on desktop Chrome, Edge, or Firefox.', 7000);
     return;
   }
-
   if (!isScreenSharing) {
     try {
       screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
     } catch (e) {
-      console.warn('getDisplayMedia error:', e);
       if (e && e.name === 'NotAllowedError') showCallMsg('Screen share was cancelled or permission was denied.', 4000);
       else if (e && e.name === 'NotSupportedError') showCallMsg('Screen sharing is not supported on this device.', 5000);
-      else if (e && e.name === 'TypeError') showCallMsg('Screen sharing needs a secure context (HTTPS). Use the https:// link.', 5000);
       else showCallMsg('Could not start screen sharing on this device.', 5000);
       return;
     }
     const screenTrack = screenStream.getVideoTracks()[0];
     const audioTracks = localStream ? localStream.getAudioTracks() : [];
     outgoingStream = new MediaStream([screenTrack, ...audioTracks]);
-
     replaceOutgoingVideoTrackAll(screenTrack);
     const selfTile = tiles['self'];
     if (selfTile) attachStreamToVideo(selfTile.video, outgoingStream);
-
     isScreenSharing = true;
     shareBtn.textContent = 'Stop Sharing';
     shareBtn.classList.add('active');
@@ -827,10 +803,7 @@ shareBtn.addEventListener('click', async () => {
 });
 
 function stopScreenShare() {
-  if (screenStream) {
-    screenStream.getTracks().forEach((t) => t.stop());
-    screenStream = null;
-  }
+  if (screenStream) { screenStream.getTracks().forEach((t) => t.stop()); screenStream = null; }
   if (localStream) {
     const camTrack = localStream.getVideoTracks()[0];
     if (camTrack) {
@@ -854,7 +827,6 @@ function escapeHtml(str) {
   d.textContent = str;
   return d.innerHTML;
 }
-
 function appendMessage(fromId, text) {
   const isMe = fromId === 'me';
   const div = document.createElement('div');
@@ -864,7 +836,6 @@ function appendMessage(fromId, text) {
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
-
 function sendChatMessage() {
   const text = chatInput.value.trim();
   if (!text) return;
@@ -872,7 +843,6 @@ function sendChatMessage() {
   broadcast({ type: 'chat', text });
   chatInput.value = '';
 }
-
 chatSendBtn.addEventListener('click', sendChatMessage);
 chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 chatToggleBtn.addEventListener('click', () => {
@@ -882,14 +852,12 @@ chatToggleBtn.addEventListener('click', () => {
 });
 
 // ---------------------------------------------------------------------
-// Resume video after backgrounding
+// Resume video after the tab/app is backgrounded then re-opened
 // ---------------------------------------------------------------------
 function resumeAllVideos() {
-  Object.values(tiles).forEach((t) => {
-    if (t.video && t.video.srcObject && t.video.paused) safePlay(t.video);
-  });
+  Object.values(tiles).forEach((t) => { if (t.video && t.video.srcObject && t.video.paused) safePlay(t.video); });
 }
-window.addEventListener('pageshow', () => resumeAllVideos());
+window.addEventListener('pageshow', resumeAllVideos);
 window.addEventListener('focus', resumeAllVideos);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) resumeAllVideos(); });
 </script>
