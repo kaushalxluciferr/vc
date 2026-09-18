@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>QuickCall — Group Video Calling</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QuickCall — Video Calling</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
   :root {
@@ -27,50 +27,53 @@
     flex-direction: column;
     align-items: center;
   }
-  header { width: 100%; padding: 16px 20px; text-align: center; border-bottom: 1px solid var(--border); }
-  header h1 { margin: 0; font-size: 19px; font-weight: 600; }
+  header {
+    width: 100%;
+    padding: 18px 24px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0; font-size: 20px; font-weight: 600; }
   header span { color: var(--accent); }
 
   main {
     width: 100%;
-    max-width: 780px;
-    padding: 20px 14px 50px;
+    max-width: 640px;
+    padding: 24px 16px 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
   }
 
   .card {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 22px;
+    padding: 24px;
     width: 100%;
     text-align: center;
   }
-  .card h2 { margin-top: 0; font-size: 16px; font-weight: 600; }
-  .card p { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+  .card h2 { margin-top: 0; font-size: 17px; font-weight: 600; }
+  .card p { color: var(--muted); font-size: 14px; line-height: 1.5; }
 
   button {
-    font-size: 14.5px;
+    font-size: 15px;
     font-weight: 600;
-    padding: 11px 18px;
+    padding: 12px 22px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
     transition: background 0.15s ease;
-    white-space: nowrap;
   }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover { background: var(--accent-hover); }
   .btn-danger { background: var(--danger); color: white; }
   .btn-secondary { background: #262a35; color: var(--text); }
   .btn-secondary:hover { background: #303543; }
-  .btn-secondary.active { background: var(--accent); color: white; }
-  .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
-  #linkBox, #inviteLinkBox {
+  #linkBox {
+    display: none;
     margin-top: 14px;
     background: #10121a;
     border: 1px solid var(--border);
@@ -80,86 +83,39 @@
     font-size: 13px;
     color: var(--accent);
   }
-  #linkBox { display: none; }
 
   .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
 
-  #callArea { width: 100%; display: none; flex-direction: column; gap: 12px; }
-  #participantCount { font-size: 12.5px; color: var(--muted); text-align: center; }
-
-  #videoGrid {
+  #videos {
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 10px;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
   }
-  .tile {
+  .video-wrap {
     position: relative;
+    width: 100%;
     background: #000;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
-    aspect-ratio: 4/3;
+    aspect-ratio: 16/10;
   }
-  .tile video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .tile-label {
-    position: absolute; bottom: 6px; left: 8px;
-    background: rgba(0,0,0,0.55); padding: 3px 8px; border-radius: 6px; font-size: 11px;
+  video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .label {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    background: rgba(0,0,0,0.5);
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 12px;
   }
-  .pip-btn {
-    position: absolute; top: 6px; right: 6px;
-    background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 6px;
-    padding: 4px 8px; font-size: 10.5px; cursor: pointer;
-  }
+  #localWrap { position: absolute; width: 34%; max-width: 160px; bottom: 12px; right: 12px; border: 2px solid var(--border); z-index: 2; aspect-ratio: 3/4; }
+  #remoteWrap { position: relative; }
 
-  #controls { display: none; gap: 10px; margin-top: 2px; flex-wrap: wrap; justify-content: center; width: 100%; }
+  #controls { display: none; gap: 12px; margin-top: 4px; }
   #status { font-size: 13px; color: var(--muted); margin-top: 6px; }
-  #callMsg { font-size: 12.5px; color: var(--muted); text-align: center; width: 100%; min-height: 16px; }
   .id-badge { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-  .side-panel {
-    display: none; width: 100%; background: var(--panel); border: 1px solid var(--border);
-    border-radius: 14px; padding: 14px; flex-direction: column; gap: 10px;
-  }
-  .side-panel.active { display: flex; }
-  #chatMessages { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px; }
-  .chat-msg { font-size: 13px; padding: 7px 11px; border-radius: 10px; max-width: 82%; word-break: break-word; line-height: 1.4; }
-  .chat-msg.me { align-self: flex-end; background: var(--accent); color: #fff; }
-  .chat-msg.them { align-self: flex-start; background: #20242e; }
-  .chat-msg .sender { display: block; font-size: 10.5px; opacity: 0.75; margin-bottom: 2px; }
-  .chat-input-row { display: flex; gap: 8px; }
-  .chat-input-row input {
-    flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
-    background: #10121a; color: var(--text); font-size: 14px; min-width: 0;
-  }
-  .chat-input-row input:focus { outline: 1px solid var(--accent); }
-  .chat-note, .side-note { font-size: 11px; color: var(--muted); text-align: center; margin: 0; }
-
-  @media (max-width: 480px) {
-    header { padding: 12px 14px; }
-    header h1 { font-size: 17px; }
-    main { padding: 14px 8px 36px; gap: 12px; }
-    .card { padding: 16px; }
-    .card h2 { font-size: 15px; }
-    .card p { font-size: 13px; }
-    button { padding: 10px 14px; font-size: 13.5px; }
-    #videoGrid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 6px; }
-    .tile-label { font-size: 10px; padding: 2px 6px; }
-    .pip-btn { font-size: 9.5px; padding: 3px 6px; }
-    #controls { gap: 8px; }
-    #chatMessages { max-height: 160px; }
-    .chat-msg { font-size: 12.5px; max-width: 90%; }
-  }
-  @media (max-width: 360px) {
-    #controls button { flex: 1 1 calc(50% - 8px); }
-  }
-
-  #tapOverlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999;
-    align-items: center; justify-content: center; flex-direction: column; color: #fff;
-    font-size: 16px; cursor: pointer; text-align: center; padding: 20px;
-  }
-  #tapOverlay.show { display: flex; }
-  #tapOverlay .icon { font-size: 48px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -171,8 +127,8 @@
 <main>
 
   <div class="card" id="setupCard">
-    <h2>Start a Group Video Call</h2>
-    <p>Click below to create a call, then send the link to everyone you want on the call. Anyone who opens it and accepts joins the same call — not just one person.</p>
+    <h2>Start or Join a Video Call</h2>
+    <p>Click below to create a call, then send the link that appears to the person you want to call. When they open it and accept, you'll both be connected.</p>
     <div class="row">
       <button class="btn-primary" id="createBtn">Create Call & Get Link</button>
     </div>
@@ -185,7 +141,7 @@
 
   <div class="card" id="joinCard" style="display:none;">
     <h2>Incoming Call Invitation</h2>
-    <p>Someone has sent you a QuickCall link. Accept to join the group video call.</p>
+    <p>Someone has sent you a QuickCall link. Accept to join the video call.</p>
     <div class="row">
       <button class="btn-primary" id="acceptBtn">Accept & Join</button>
       <button class="btn-secondary" id="declineBtn">Decline</button>
@@ -193,117 +149,32 @@
     <div id="joinStatus" class="id-badge"></div>
   </div>
 
-  <div id="callArea">
-    <div id="participantCount"></div>
-    <div id="videoGrid"></div>
-    <div id="controls">
-      <button class="btn-secondary" id="muteBtn">Mute</button>
-      <button class="btn-secondary" id="camBtn">Camera Off</button>
-      <button class="btn-secondary" id="shareBtn">Share Screen</button>
-      <button class="btn-secondary" id="inviteBtn">Invite</button>
-      <button class="btn-secondary" id="chatToggleBtn">Chat</button>
-      <button class="btn-danger" id="endBtn">End Call</button>
-    </div>
-    <div id="callMsg"></div>
-
-    <div id="invitePanel" class="side-panel">
-      <p class="side-note">Share this link to bring more people into the call.</p>
-      <div id="inviteLinkBox"></div>
-      <div class="row"><button class="btn-secondary" id="inviteCopyBtn">Copy Link</button></div>
-    </div>
-
-    <div id="chatPanel" class="side-panel">
-      <p class="chat-note">Messages are temporary — not saved anywhere, and disappear when the call ends.</p>
-      <div id="chatMessages"></div>
-      <div class="chat-input-row">
-        <input type="text" id="chatInput" placeholder="Type a message…" maxlength="500" />
-        <button class="btn-primary" id="chatSendBtn">Send</button>
+  <div id="videos">
+    <div id="remoteWrap" class="video-wrap">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="label">Them</div>
+      <div id="localWrap" class="video-wrap">
+        <video id="localVideo" autoplay playsinline muted></video>
+        <div class="label">You</div>
       </div>
     </div>
   </div>
 
+  <div id="controls">
+    <button class="btn-secondary" id="muteBtn">Mute</button>
+    <button class="btn-secondary" id="camBtn">Camera Off</button>
+    <button class="btn-danger" id="endBtn">End Call</button>
+  </div>
+
 </main>
 
-<div id="tapOverlay">
-  <div class="icon">📹</div>
-  <div>Tap anywhere to enable video</div>
-</div>
-
 <script>
-// ---------------------------------------------------------------------
-// WebRTC connectivity config.
-//
-// IMPORTANT DESIGN CHOICE: a real test call between two phones on
-// different networks worked using PeerJS's *default* settings — which
-// use several Google STUN mirrors. An earlier version of this app
-// REPLACED that default list with a smaller custom one, which likely
-// hurt more than it helped. This version keeps ALL of PeerJS's default
-// STUN servers and only ADDS a TURN relay on top, as an extra safety
-// net for the harder NAT cases — never removing what already worked.
-//
-// The TURN entries are a free public relay (Open Relay Project). It's a
-// shared demo credential used across many tutorials, so it can get
-// overloaded. For guaranteed-reliable results, get your own free TURN
-// key (2 minutes, no card) and fill in METERED_DOMAIN / METERED_API_KEY
-// below — see the README. Without it, this still works standalone off
-// the default STUN servers for most network combinations, same as the
-// version that worked for you, with TURN as a bonus fallback.
-// ---------------------------------------------------------------------
-const METERED_DOMAIN = '';   // e.g. 'yourapp.metered.live' — optional, see README
-const METERED_API_KEY = ''; // your personal free API key — optional, see README
-
-const DEFAULT_STUN_SERVERS = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-  { urls: 'stun:stun2.l.google.com:19302' },
-  { urls: 'stun:stun3.l.google.com:19302' },
-  { urls: 'stun:stun4.l.google.com:19302' },
-  { urls: 'stun:global.stun.twilio.com:3478' }
-];
-const FALLBACK_TURN_SERVERS = [
-  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-];
-
-async function buildIceConfig() {
-  let turnServers = FALLBACK_TURN_SERVERS;
-  if (METERED_DOMAIN && METERED_API_KEY) {
-    try {
-      const res = await fetch('https://' + METERED_DOMAIN + '/api/v1/turn/credentials?apiKey=' + METERED_API_KEY);
-      if (res.ok) {
-        const fresh = await res.json();
-        if (Array.isArray(fresh) && fresh.length) {
-          console.log('Using personal TURN credentials from metered.ca');
-          turnServers = fresh.concat(FALLBACK_TURN_SERVERS);
-        }
-      }
-    } catch (e) {
-      console.warn('Could not fetch personal TURN credentials, using shared demo TURN only.', e);
-    }
-  }
-  return { iceServers: DEFAULT_STUN_SERVERS.concat(turnServers) };
-}
-
-// ---------------------------------------------------------------------
-// State
-// ---------------------------------------------------------------------
 let peer = null;
-let myId = null;
-let inviteLink = '';
 let localStream = null;
-let outgoingStream = null;
-let screenStream = null;
-let isScreenSharing = false;
+let currentCall = null;
 let micOn = true;
 let camOn = true;
-let videoUnlocked = false;
-const peers = {};
-const tiles = {};
 
-// ---------------------------------------------------------------------
-// DOM refs
-// ---------------------------------------------------------------------
 const setupCard = document.getElementById('setupCard');
 const joinCard = document.getElementById('joinCard');
 const createBtn = document.getElementById('createBtn');
@@ -314,361 +185,101 @@ const statusEl = document.getElementById('status');
 const joinStatus = document.getElementById('joinStatus');
 const acceptBtn = document.getElementById('acceptBtn');
 const declineBtn = document.getElementById('declineBtn');
-const callArea = document.getElementById('callArea');
-const videoGrid = document.getElementById('videoGrid');
-const participantCount = document.getElementById('participantCount');
+const videosEl = document.getElementById('videos');
 const controlsEl = document.getElementById('controls');
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
 const muteBtn = document.getElementById('muteBtn');
 const camBtn = document.getElementById('camBtn');
-const shareBtn = document.getElementById('shareBtn');
-const inviteBtn = document.getElementById('inviteBtn');
-const invitePanel = document.getElementById('invitePanel');
-const inviteLinkBox = document.getElementById('inviteLinkBox');
-const inviteCopyBtn = document.getElementById('inviteCopyBtn');
-const chatToggleBtn = document.getElementById('chatToggleBtn');
 const endBtn = document.getElementById('endBtn');
-const callMsg = document.getElementById('callMsg');
-const chatPanel = document.getElementById('chatPanel');
-const chatMessages = document.getElementById('chatMessages');
-const chatInput = document.getElementById('chatInput');
-const chatSendBtn = document.getElementById('chatSendBtn');
-const tapOverlay = document.getElementById('tapOverlay');
-
-function showCallMsg(text, timeout) {
-  callMsg.textContent = text;
-  if (timeout) {
-    clearTimeout(showCallMsg._t);
-    showCallMsg._t = setTimeout(() => { callMsg.textContent = ''; }, timeout);
-  }
-}
 
 function genId() {
   return 'qc-' + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
 }
+
 function getRoomFromUrl() {
-  return new URLSearchParams(window.location.search).get('room');
-}
-function shortLabel(id) {
-  return 'User ' + id.replace('qc-', '').slice(-4).toUpperCase();
+  const params = new URLSearchParams(window.location.search);
+  return params.get('room');
 }
 
 async function getLocalStream() {
-  if (localStream && localStream.getTracks().some((t) => t.readyState === 'live')) return localStream;
-  if (localStream) { localStream.getTracks().forEach((t) => t.stop()); localStream = null; }
-  localStream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-    audio: { echoCancellation: true, noiseSuppression: true }
-  });
+  if (localStream) return localStream;
+  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  localVideo.srcObject = localStream;
   return localStream;
-}
-
-// ---------------------------------------------------------------------
-// Autoplay-safe video playback (handles mobile browsers blocking
-// autoplay until the user interacts with the page)
-// ---------------------------------------------------------------------
-function safePlay(videoEl) {
-  if (!videoEl) return;
-  const p = videoEl.play();
-  if (p && typeof p.catch === 'function') {
-    p.catch(() => { if (!videoUnlocked) tapOverlay.classList.add('show'); });
-  }
-}
-function unlockVideos() {
-  videoUnlocked = true;
-  tapOverlay.classList.remove('show');
-  Object.values(tiles).forEach((t) => {
-    if (t.video && t.video.paused && t.video.srcObject) safePlay(t.video);
-  });
-}
-tapOverlay.addEventListener('click', unlockVideos);
-tapOverlay.addEventListener('touchstart', unlockVideos);
-['touchstart', 'click', 'keydown'].forEach((evt) => {
-  document.body.addEventListener(evt, () => { if (!videoUnlocked) unlockVideos(); }, { once: true, passive: true });
-});
-
-function attachStreamToVideo(videoEl, stream) {
-  if (!videoEl || !stream) return;
-  try { videoEl.srcObject = stream; } catch (e) { try { videoEl.src = URL.createObjectURL(stream); } catch (e2) {} }
-  const tryPlay = () => safePlay(videoEl);
-  videoEl.onloadedmetadata = tryPlay;
-  tryPlay();
-}
-
-// ---------------------------------------------------------------------
-// Video tiles
-// ---------------------------------------------------------------------
-function ensureTile(id, label) {
-  if (tiles[id]) return tiles[id];
-  const wrap = document.createElement('div');
-  wrap.className = 'tile';
-
-  const video = document.createElement('video');
-  video.autoplay = true;
-  video.playsInline = true;
-  video.setAttribute('playsinline', '');
-  video.setAttribute('webkit-playsinline', '');
-  if (id === 'self') video.muted = true;
-  wrap.appendChild(video);
-
-  const labelEl = document.createElement('div');
-  labelEl.className = 'tile-label';
-  labelEl.textContent = label;
-  wrap.appendChild(labelEl);
-
-  if (id !== 'self') {
-    const pipBtn = document.createElement('button');
-    pipBtn.className = 'pip-btn';
-    pipBtn.textContent = 'PiP';
-    pipBtn.title = 'Picture-in-picture';
-    pipBtn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      try {
-        if (!document.pictureInPictureEnabled || !video.requestPictureInPicture) {
-          showCallMsg('Picture-in-picture is not supported on this browser.', 3500);
-          return;
-        }
-        if (document.pictureInPictureElement === video) await document.exitPictureInPicture();
-        else await video.requestPictureInPicture();
-      } catch (err) {
-        showCallMsg('Could not enter picture-in-picture mode.', 3500);
-      }
-    });
-    wrap.appendChild(pipBtn);
-  }
-
-  videoGrid.appendChild(wrap);
-  tiles[id] = { wrap, video };
-  updateParticipantCount();
-  return tiles[id];
-}
-
-function removeTile(id) {
-  const t = tiles[id];
-  if (t) {
-    try { t.video.srcObject = null; } catch (e) {}
-    t.wrap.remove();
-    delete tiles[id];
-  }
-  updateParticipantCount();
-}
-
-function updateParticipantCount() {
-  const n = Object.keys(tiles).length;
-  participantCount.textContent = n <= 1
-    ? 'Just you so far — share the link to bring others in.'
-    : n + ' people in the call';
-
-  if (n > 1 && setupCard.style.display !== 'none') {
-    setupCard.style.display = 'none';
-    showCallMsg('Someone joined — the link box is now hidden. Tap "Invite" to share it again anytime.', 5000);
-  }
 }
 
 function showCallUI() {
   setupCard.style.display = 'none';
   joinCard.style.display = 'none';
-  callArea.style.display = 'flex';
+  videosEl.style.display = 'flex';
   controlsEl.style.display = 'flex';
 }
 
-// ---------------------------------------------------------------------
-// Mesh networking
-// ---------------------------------------------------------------------
-function registerCall(id, call) {
-  if (!peers[id]) peers[id] = {};
-  peers[id].call = call;
-  let gotStream = false;
-
+function wireCallEvents(call) {
+  currentCall = call;
   call.on('stream', (remoteStream) => {
-    gotStream = true;
-    const tile = ensureTile(id, shortLabel(id));
-    attachStreamToVideo(tile.video, remoteStream);
+    remoteVideo.srcObject = remoteStream;
   });
-  call.on('close', () => { removeTile(id); if (peers[id]) delete peers[id].call; });
+  call.on('close', endCall);
   call.on('error', (err) => {
-    console.error('call error', err);
-    showCallMsg('Call error with a participant — they may have dropped.', 3500);
-  });
-
-  if (call.peerConnection) {
-    const pc = call.peerConnection;
-    pc.addEventListener('iceconnectionstatechange', () => {
-      console.log('ICE state with', id, '→', pc.iceConnectionState);
-      if (pc.iceConnectionState === 'failed') {
-        showCallMsg('Could not connect media with a participant. Try switching networks, or set up a personal TURN key for reliability (see README).', 8000);
-      } else if (pc.iceConnectionState === 'disconnected') {
-        showCallMsg('Connection with a participant dropped — trying to recover…', 4000);
-      }
-    });
-    setTimeout(() => {
-      if (!gotStream && pc.iceConnectionState !== 'connected' && pc.iceConnectionState !== 'completed') {
-        showCallMsg('Still trying to connect video — this can take longer on some mobile networks…', 6000);
-      }
-    }, 8000);
-  }
-}
-
-function registerConn(id, conn) {
-  if (!peers[id]) peers[id] = {};
-  peers[id].conn = conn;
-  conn.on('data', (msg) => handleMessage(id, msg));
-  conn.on('close', () => { if (peers[id]) delete peers[id].conn; });
-  conn.on('error', (err) => console.error('conn error', err));
-}
-
-// Exactly one side of every pair places the media call — whichever peer
-// ID sorts first, alphabetically. This check runs from BOTH directions
-// (whoever connects, and whoever merely receives a connection) so a
-// pair can never end up where neither side calls.
-function maybeCall(id) {
-  if (!id || id === myId) return;
-  if (peers[id] && peers[id].call) return;
-  if (!(myId < id)) return;
-  if (!outgoingStream) return;
-  const call = peer.call(id, outgoingStream);
-  if (call) registerCall(id, call);
-}
-
-function connectToPeer(id, sendJoinMsg) {
-  if (!id || id === myId || (peers[id] && peers[id].conn)) return;
-  const conn = peer.connect(id, { reliable: true });
-  registerConn(id, conn);
-  if (sendJoinMsg) conn.on('open', () => conn.send({ type: 'join', id: myId }));
-  maybeCall(id);
-}
-
-function sendTo(id, msg) {
-  const p = peers[id];
-  if (p && p.conn && p.conn.open) p.conn.send(msg);
-}
-function broadcast(msg, excludeIds) {
-  excludeIds = excludeIds || [];
-  Object.keys(peers).forEach((id) => { if (!excludeIds.includes(id)) sendTo(id, msg); });
-}
-
-function handleMessage(fromId, msg) {
-  if (!msg || !msg.type) return;
-  if (msg.type === 'chat') {
-    appendMessage(fromId, msg.text);
-  } else if (msg.type === 'join') {
-    const roster = Object.keys(peers).filter((pid) => pid !== fromId);
-    sendTo(fromId, { type: 'roster', peers: roster });
-    broadcast({ type: 'new-peer', id: fromId }, [fromId]);
-  } else if (msg.type === 'roster') {
-    (msg.peers || []).forEach((id) => connectToPeer(id, false));
-  } else if (msg.type === 'new-peer') {
-    connectToPeer(msg.id, false);
-  }
-}
-
-function initPeerEvents() {
-  peer.on('call', async (call) => {
-    if (!outgoingStream) {
-      try { outgoingStream = await getLocalStream(); }
-      catch (e) { console.error('Cannot answer without stream', e); return; }
-    }
-    try { call.answer(outgoingStream); registerCall(call.peer, call); }
-    catch (e) { console.error('answer error', e); }
-  });
-
-  peer.on('connection', (conn) => {
-    registerConn(conn.peer, conn);
-    maybeCall(conn.peer);
-  });
-
-  peer.on('error', (err) => {
     console.error(err);
-    const msg = 'Connection error: ' + err.type + '. Check your internet connection and try again.';
-    if (callArea.style.display === 'flex') {
-      showCallMsg(msg, 6000);
-    } else {
-      statusEl.textContent = msg;
-      joinStatus.textContent = msg;
-      createBtn.disabled = false;
-      acceptBtn.disabled = false;
-      declineBtn.disabled = false;
-    }
-  });
-
-  peer.on('disconnected', () => {
-    showCallMsg('Lost connection to the signaling server — trying to reconnect…', 4000);
-    try { peer.reconnect(); } catch (e) {}
+    statusEl.textContent = 'Call error: ' + err;
   });
 }
 
 function endCall() {
-  Object.values(peers).forEach((p) => {
-    try { if (p.call) p.call.close(); } catch (e) {}
-    try { if (p.conn) p.conn.close(); } catch (e) {}
-  });
-  try { if (peer) peer.destroy(); } catch (e) {}
-  if (localStream) localStream.getTracks().forEach((t) => t.stop());
-  if (screenStream) screenStream.getTracks().forEach((t) => t.stop());
+  if (currentCall) currentCall.close();
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+  }
   window.location.href = window.location.pathname;
 }
 
-// ---------------------------------------------------------------------
-// HOST FLOW
-// ---------------------------------------------------------------------
+// ---- HOST FLOW ----
 createBtn.addEventListener('click', async () => {
   createBtn.disabled = true;
   statusEl.textContent = 'Setting up your call…';
   const roomId = genId();
 
-  try { await getLocalStream(); }
-  catch (e) {
+  try {
+    await getLocalStream();
+  } catch (e) {
     statusEl.textContent = 'Camera/mic permission is needed to start a call.';
     createBtn.disabled = false;
     return;
   }
-  outgoingStream = localStream;
 
-  const iceConfig = await buildIceConfig();
-  peer = new Peer(roomId, { config: iceConfig });
-  initPeerEvents();
-
-  const openTimeout = setTimeout(() => {
-    statusEl.textContent = 'Still trying to connect… this is taking longer than usual. Try switching networks, or refresh and try again.';
-  }, 8000);
+  peer = new Peer(roomId);
 
   peer.on('open', (id) => {
-    clearTimeout(openTimeout);
-    myId = id;
-    inviteLink = window.location.origin + window.location.pathname + '?room=' + id;
-
+    const link = window.location.origin + window.location.pathname + '?room=' + id;
     linkBox.style.display = 'block';
-    linkBox.textContent = inviteLink;
+    linkBox.textContent = link;
     copyRow.style.display = 'flex';
-    statusEl.textContent = 'Call created — send the link below to as many people as you like.';
+    statusEl.textContent = 'Waiting for the other person to join…';
 
-    copyBtn.onclick = () => {
-      navigator.clipboard.writeText(inviteLink).then(() => {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(link).then(() => {
         copyBtn.textContent = 'Copied!';
         setTimeout(() => (copyBtn.textContent = 'Copy Link'), 1500);
-      }).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = inviteLink;
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); copyBtn.textContent = 'Copied!'; } catch (e) {}
-        document.body.removeChild(ta);
-        setTimeout(() => (copyBtn.textContent = 'Copy Link'), 1500);
       });
-    };
+    });
+  });
 
-    const selfTile = ensureTile('self', 'You');
-    attachStreamToVideo(selfTile.video, outgoingStream);
+  peer.on('call', (call) => {
+    call.answer(localStream);
+    wireCallEvents(call);
+    showCallUI();
+  });
 
-    joinCard.style.display = 'none';
-    createBtn.style.display = 'none';
-    callArea.style.display = 'flex';
-    controlsEl.style.display = 'flex';
+  peer.on('error', (err) => {
+    console.error(err);
+    statusEl.textContent = 'Connection error: ' + err.type;
   });
 });
 
-// ---------------------------------------------------------------------
-// GUEST FLOW
-// ---------------------------------------------------------------------
+// ---- GUEST FLOW ----
 const roomFromUrl = getRoomFromUrl();
 if (roomFromUrl) {
   setupCard.style.display = 'none';
@@ -679,32 +290,26 @@ if (roomFromUrl) {
     declineBtn.disabled = true;
     joinStatus.textContent = 'Connecting…';
 
-    try { await getLocalStream(); }
-    catch (e) {
+    try {
+      await getLocalStream();
+    } catch (e) {
       joinStatus.textContent = 'Camera/mic permission is needed to join.';
       acceptBtn.disabled = false;
       declineBtn.disabled = false;
       return;
     }
-    outgoingStream = localStream;
 
-    const iceConfig = await buildIceConfig();
-    peer = new Peer(undefined, { config: iceConfig });
-    initPeerEvents();
-
-    const openTimeout = setTimeout(() => {
-      joinStatus.textContent = 'Still trying to connect… this is taking longer than usual. Try switching networks, or refresh and try again.';
-    }, 8000);
-
-    peer.on('open', (id) => {
-      clearTimeout(openTimeout);
-      myId = id;
-      inviteLink = window.location.href;
-
-      const selfTile = ensureTile('self', 'You');
-      attachStreamToVideo(selfTile.video, outgoingStream);
+    peer = new Peer();
+    peer.on('open', () => {
+      const call = peer.call(roomFromUrl, localStream);
+      wireCallEvents(call);
       showCallUI();
-      connectToPeer(roomFromUrl, true);
+    });
+    peer.on('error', (err) => {
+      console.error(err);
+      joinStatus.textContent = 'Could not connect: ' + err.type + '. The host may be offline.';
+      acceptBtn.disabled = false;
+      declineBtn.disabled = false;
     });
   });
 
@@ -713,155 +318,23 @@ if (roomFromUrl) {
   });
 }
 
-// ---------------------------------------------------------------------
-// Invite panel
-// ---------------------------------------------------------------------
-inviteBtn.addEventListener('click', () => {
-  inviteLinkBox.textContent = inviteLink || 'Link not available yet.';
-  invitePanel.classList.toggle('active');
-  inviteBtn.classList.toggle('active');
-});
-inviteCopyBtn.addEventListener('click', () => {
-  if (!inviteLink) return;
-  navigator.clipboard.writeText(inviteLink).then(() => {
-    inviteCopyBtn.textContent = 'Copied!';
-    setTimeout(() => (inviteCopyBtn.textContent = 'Copy Link'), 1500);
-  }).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = inviteLink;
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); inviteCopyBtn.textContent = 'Copied!'; } catch (e) {}
-    document.body.removeChild(ta);
-    setTimeout(() => (inviteCopyBtn.textContent = 'Copy Link'), 1500);
-  });
-});
-
-// ---------------------------------------------------------------------
-// Mic / camera controls
-// ---------------------------------------------------------------------
+// ---- CONTROLS ----
 muteBtn.addEventListener('click', () => {
   if (!localStream) return;
   micOn = !micOn;
-  localStream.getAudioTracks().forEach((t) => (t.enabled = micOn));
+  localStream.getAudioTracks().forEach(t => (t.enabled = micOn));
   muteBtn.textContent = micOn ? 'Mute' : 'Unmute';
 });
+
 camBtn.addEventListener('click', () => {
-  if (!localStream || isScreenSharing) return;
+  if (!localStream) return;
   camOn = !camOn;
-  localStream.getVideoTracks().forEach((t) => (t.enabled = camOn));
+  localStream.getVideoTracks().forEach(t => (t.enabled = camOn));
   camBtn.textContent = camOn ? 'Camera Off' : 'Camera On';
 });
+
 endBtn.addEventListener('click', endCall);
-
-// ---------------------------------------------------------------------
-// Screen sharing
-// ---------------------------------------------------------------------
-const screenShareSupported = !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
-if (!screenShareSupported) {
-  shareBtn.disabled = true;
-  shareBtn.title = 'Screen sharing is not supported on this browser';
-}
-
-function replaceOutgoingVideoTrackAll(newTrack) {
-  Object.values(peers).forEach((p) => {
-    if (p.call && p.call.peerConnection) {
-      const sender = p.call.peerConnection.getSenders().find((s) => s.track && s.track.kind === 'video');
-      if (sender) sender.replaceTrack(newTrack).catch((err) => console.warn('replaceTrack', err));
-    }
-  });
-}
-
-shareBtn.addEventListener('click', async () => {
-  if (!screenShareSupported) {
-    showCallMsg('Screen sharing isn\'t supported on this browser/device. It works reliably on desktop Chrome, Edge, or Firefox.', 7000);
-    return;
-  }
-  if (!isScreenSharing) {
-    try {
-      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
-    } catch (e) {
-      if (e && e.name === 'NotAllowedError') showCallMsg('Screen share was cancelled or permission was denied.', 4000);
-      else if (e && e.name === 'NotSupportedError') showCallMsg('Screen sharing is not supported on this device.', 5000);
-      else showCallMsg('Could not start screen sharing on this device.', 5000);
-      return;
-    }
-    const screenTrack = screenStream.getVideoTracks()[0];
-    const audioTracks = localStream ? localStream.getAudioTracks() : [];
-    outgoingStream = new MediaStream([screenTrack, ...audioTracks]);
-    replaceOutgoingVideoTrackAll(screenTrack);
-    const selfTile = tiles['self'];
-    if (selfTile) attachStreamToVideo(selfTile.video, outgoingStream);
-    isScreenSharing = true;
-    shareBtn.textContent = 'Stop Sharing';
-    shareBtn.classList.add('active');
-    camBtn.disabled = true;
-    screenTrack.onended = stopScreenShare;
-  } else {
-    stopScreenShare();
-  }
-});
-
-function stopScreenShare() {
-  if (screenStream) { screenStream.getTracks().forEach((t) => t.stop()); screenStream = null; }
-  if (localStream) {
-    const camTrack = localStream.getVideoTracks()[0];
-    if (camTrack) {
-      outgoingStream = localStream;
-      replaceOutgoingVideoTrackAll(camTrack);
-      const selfTile = tiles['self'];
-      if (selfTile) attachStreamToVideo(selfTile.video, outgoingStream);
-    }
-  }
-  isScreenSharing = false;
-  shareBtn.textContent = 'Share Screen';
-  shareBtn.classList.remove('active');
-  camBtn.disabled = false;
-}
-
-// ---------------------------------------------------------------------
-// Chat
-// ---------------------------------------------------------------------
-function escapeHtml(str) {
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
-function appendMessage(fromId, text) {
-  const isMe = fromId === 'me';
-  const div = document.createElement('div');
-  div.className = 'chat-msg ' + (isMe ? 'me' : 'them');
-  const label = isMe ? 'You' : shortLabel(fromId);
-  div.innerHTML = '<span class="sender">' + label + '</span>' + escapeHtml(text);
-  chatMessages.appendChild(div);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-function sendChatMessage() {
-  const text = chatInput.value.trim();
-  if (!text) return;
-  appendMessage('me', text);
-  broadcast({ type: 'chat', text });
-  chatInput.value = '';
-}
-chatSendBtn.addEventListener('click', sendChatMessage);
-chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
-chatToggleBtn.addEventListener('click', () => {
-  chatPanel.classList.toggle('active');
-  chatToggleBtn.classList.toggle('active');
-  if (chatPanel.classList.contains('active')) chatInput.focus();
-});
-
-// ---------------------------------------------------------------------
-// Resume video after the tab/app is backgrounded then re-opened
-// ---------------------------------------------------------------------
-function resumeAllVideos() {
-  Object.values(tiles).forEach((t) => { if (t.video && t.video.srcObject && t.video.paused) safePlay(t.video); });
-}
-window.addEventListener('pageshow', resumeAllVideos);
-window.addEventListener('focus', resumeAllVideos);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) resumeAllVideos(); });
 </script>
 
 </body>
 </html>
-//hjj
