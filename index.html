@@ -18,52 +18,30 @@
   }
   * { box-sizing: border-box; }
   html, body {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
+    background: var(--bg); color: var(--text); min-height: 100vh;
   }
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  body { display: flex; flex-direction: column; align-items: center; }
   header { width: 100%; padding: 16px 20px; text-align: center; border-bottom: 1px solid var(--border); }
   header h1 { margin: 0; font-size: 19px; font-weight: 600; }
   header span { color: var(--accent); }
 
   main {
-    width: 100%;
-    max-width: 1200px;
-    padding: 20px 14px 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
+    width: 100%; max-width: 1200px; padding: 20px 14px 50px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
   }
 
   .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px;
-    width: 100%;
-    text-align: center;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; width: 100%; text-align: center;
   }
   .card h2 { margin-top: 0; font-size: 16px; font-weight: 600; }
   .card p { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 
   button {
-    font-size: 14.5px;
-    font-weight: 600;
-    padding: 11px 18px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.15s ease;
-    white-space: nowrap;
+    font-size: 14.5px; font-weight: 600; padding: 11px 18px; border-radius: 10px;
+    border: none; cursor: pointer; transition: background 0.15s ease; white-space: nowrap;
   }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover { background: var(--accent-hover); }
@@ -73,206 +51,90 @@
   .btn-secondary.active { background: var(--accent); color: white; }
   .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
-  #linkBox {
-    display: none;
-    margin-top: 14px;
-    background: #10121a;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    word-break: break-all;
-    font-size: 13px;
-    color: var(--accent);
+  #linkBox, #inviteLinkBox {
+    margin-top: 14px; background: #10121a; border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px; word-break: break-all; font-size: 13px; color: var(--accent);
   }
+  #linkBox { display: none; }
 
   .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
 
   #callArea { width: 100%; display: none; flex-direction: column; gap: 12px; }
   #participantCount { font-size: 12.5px; color: var(--muted); text-align: center; }
 
-  /* Main video container — fixed 16:9 aspect ratio */
   #videoGrid {
-    width: 100%;
-    position: relative;
-    background: #000;
-    border-radius: 14px;
-    overflow: hidden;
-    aspect-ratio: 16/9;
-    max-height: 70vh;
+    width: 100%; position: relative; background: #000; border-radius: 14px;
+    overflow: hidden; aspect-ratio: 16/9; max-height: 70vh;
   }
-
-  /* Remote tiles */
-  .tile {
-    position: absolute;
-    background: #111;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.2s ease;
-  }
-  .tile video {
-    width: 100%;
-    height: 100%;
-    display: block;
-    background: #000;
-    object-fit: cover;
-  }
+  .tile { position: absolute; background: #111; border-radius: 10px; overflow: hidden; transition: all 0.2s ease; }
+  .tile video { width: 100%; height: 100%; display: block; background: #000; object-fit: contain; }
   .tile-label {
-    position: absolute;
-    bottom: 6px;
-    left: 8px;
-    background: rgba(0,0,0,0.6);
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 11px;
-    z-index: 2;
+    position: absolute; bottom: 6px; left: 8px; background: rgba(0,0,0,0.6);
+    padding: 3px 8px; border-radius: 6px; font-size: 11px; z-index: 2;
   }
   .pip-btn {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 10.5px;
-    cursor: pointer;
-    z-index: 2;
+    position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.6); color: #fff;
+    border: none; border-radius: 6px; padding: 4px 8px; font-size: 10.5px; cursor: pointer; z-index: 2;
   }
-
-  /* Self tile — small PiP bottom-right */
   .tile.self-tile {
-    width: 22%;
-    max-width: 160px;
-    min-width: 90px;
-    aspect-ratio: 4/3;
-    bottom: 12px;
-    right: 12px;
-    border: 2px solid var(--accent);
-    z-index: 10;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    width: 22%; max-width: 160px; min-width: 90px; aspect-ratio: 4/3; bottom: 12px; right: 12px;
+    border: 2px solid var(--accent); z-index: 10; box-shadow: 0 4px 16px rgba(0,0,0,0.5);
   }
 
-  /* ====== LAYOUTS (desktop) ====== */
+  #videoGrid[data-count="1"] .tile.remote { top:0; left:0; width:100%; height:100%; border-radius:0; }
 
-  /* 1 remote: full screen (contain so nothing gets cropped) */
-  #videoGrid[data-count="1"] .tile.remote {
-    top: 0; left: 0; width: 100%; height: 100%;
-    border-radius: 0;
+  #videoGrid[data-count="2"] .tile.remote { top:0; height:100%; width:50%; }
+  #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { left:0; }
+  #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { left:50%; }
+
+  #videoGrid[data-count="3"] .tile.remote { width:50%; height:50%; }
+  #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top:0; left:0; }
+  #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top:0; left:50%; }
+  #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top:50%; left:0; }
+
+  #videoGrid[data-count="4"] .tile.remote { width:50%; height:50%; }
+  #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top:0; left:0; }
+  #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top:0; left:50%; }
+  #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top:50%; left:0; }
+  #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top:50%; left:50%; }
+
+  #videoGrid[data-count="5"] .tile.remote, #videoGrid[data-count="6"] .tile.remote { width:33.333%; height:50%; }
+  #videoGrid[data-count="5"] .tile.remote:nth-of-type(1), #videoGrid[data-count="6"] .tile.remote:nth-of-type(1) { top:0; left:0; }
+  #videoGrid[data-count="5"] .tile.remote:nth-of-type(2), #videoGrid[data-count="6"] .tile.remote:nth-of-type(2) { top:0; left:33.333%; }
+  #videoGrid[data-count="5"] .tile.remote:nth-of-type(3), #videoGrid[data-count="6"] .tile.remote:nth-of-type(3) { top:0; left:66.666%; }
+  #videoGrid[data-count="5"] .tile.remote:nth-of-type(4), #videoGrid[data-count="6"] .tile.remote:nth-of-type(4) { top:50%; left:0; }
+  #videoGrid[data-count="5"] .tile.remote:nth-of-type(5), #videoGrid[data-count="6"] .tile.remote:nth-of-type(5) { top:50%; left:33.333%; }
+  #videoGrid[data-count="6"] .tile.remote:nth-of-type(6) { top:50%; left:66.666%; }
+
+  #videoGrid[data-count="7"] .tile.remote, #videoGrid[data-count="8"] .tile.remote, #videoGrid[data-count="9"] .tile.remote { width:33.333%; height:33.333%; }
+  #videoGrid[data-count="7"] .tile.remote:nth-of-type(1), #videoGrid[data-count="8"] .tile.remote:nth-of-type(1), #videoGrid[data-count="9"] .tile.remote:nth-of-type(1) { top:0; left:0; }
+  #videoGrid[data-count="7"] .tile.remote:nth-of-type(2), #videoGrid[data-count="8"] .tile.remote:nth-of-type(2), #videoGrid[data-count="9"] .tile.remote:nth-of-type(2) { top:0; left:33.333%; }
+  #videoGrid[data-count="7"] .tile.remote:nth-of-type(3), #videoGrid[data-count="8"] .tile.remote:nth-of-type(3), #videoGrid[data-count="9"] .tile.remote:nth-of-type(3) { top:0; left:66.666%; }
+  #videoGrid[data-count="7"] .tile.remote:nth-of-type(4), #videoGrid[data-count="8"] .tile.remote:nth-of-type(4), #videoGrid[data-count="9"] .tile.remote:nth-of-type(4) { top:33.333%; left:0; }
+  #videoGrid[data-count="7"] .tile.remote:nth-of-type(5), #videoGrid[data-count="8"] .tile.remote:nth-of-type(5), #videoGrid[data-count="9"] .tile.remote:nth-of-type(5) { top:33.333%; left:33.333%; }
+  #videoGrid[data-count="7"] .tile.remote:nth-of-type(6), #videoGrid[data-count="8"] .tile.remote:nth-of-type(6), #videoGrid[data-count="9"] .tile.remote:nth-of-type(6) { top:33.333%; left:66.666%; }
+  #videoGrid[data-count="7"] .tile.remote:nth-of-type(7), #videoGrid[data-count="8"] .tile.remote:nth-of-type(7), #videoGrid[data-count="9"] .tile.remote:nth-of-type(7) { top:66.666%; left:0; }
+  #videoGrid[data-count="8"] .tile.remote:nth-of-type(8), #videoGrid[data-count="9"] .tile.remote:nth-of-type(8) { top:66.666%; left:33.333%; }
+  #videoGrid[data-count="9"] .tile.remote:nth-of-type(9) { top:66.666%; left:66.666%; }
+
+  #videoGrid[data-count="10"], #videoGrid[data-count="11"], #videoGrid[data-count="12"] {
+    display: flex; flex-wrap: wrap; aspect-ratio: auto; height: 70vh; overflow-y: auto;
   }
-  #videoGrid[data-count="1"] .tile.remote video { object-fit: contain; }
-
-  /* 2 remotes: side by side */
-  #videoGrid[data-count="2"] .tile.remote { top: 0; height: 100%; width: 50%; }
-  #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { left: 0; }
-  #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { left: 50%; }
-  #videoGrid[data-count="2"] .tile.remote video { object-fit: contain; }
-
-  /* 3 remotes: 2 up, 1 down */
-  #videoGrid[data-count="3"] .tile.remote { width: 50%; height: 50%; }
-  #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
-  #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
-  #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; }
-  #videoGrid[data-count="3"] .tile.remote video { object-fit: contain; }
-
-  /* 4 remotes: 2x2 */
-  #videoGrid[data-count="4"] .tile.remote { width: 50%; height: 50%; }
-  #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
-  #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
-  #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; }
-  #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top: 50%; left: 50%; }
-  #videoGrid[data-count="4"] .tile.remote video { object-fit: contain; }
-
-  /* 5-6 remotes: 3x2 grid */
-  #videoGrid[data-count="5"] .tile.remote,
-  #videoGrid[data-count="6"] .tile.remote { width: 33.333%; height: 50%; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(1),
-  #videoGrid[data-count="6"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(2),
-  #videoGrid[data-count="6"] .tile.remote:nth-of-type(2) { top: 0; left: 33.333%; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(3),
-  #videoGrid[data-count="6"] .tile.remote:nth-of-type(3) { top: 0; left: 66.666%; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(4),
-  #videoGrid[data-count="6"] .tile.remote:nth-of-type(4) { top: 50%; left: 0; }
-  #videoGrid[data-count="5"] .tile.remote:nth-of-type(5),
-  #videoGrid[data-count="6"] .tile.remote:nth-of-type(5) { top: 50%; left: 33.333%; }
-  #videoGrid[data-count="6"] .tile.remote:nth-of-type(6) { top: 50%; left: 66.666%; }
-  #videoGrid[data-count="5"] .tile.remote video,
-  #videoGrid[data-count="6"] .tile.remote video { object-fit: contain; }
-
-  /* 7-9 remotes: 3x3 grid */
-  #videoGrid[data-count="7"] .tile.remote,
-  #videoGrid[data-count="8"] .tile.remote,
-  #videoGrid[data-count="9"] .tile.remote { width: 33.333%; height: 33.333%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(1),
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(1),
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(2),
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(2),
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(2) { top: 0; left: 33.333%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(3),
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(3),
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(3) { top: 0; left: 66.666%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(4),
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(4),
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(4) { top: 33.333%; left: 0; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(5),
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(5),
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(5) { top: 33.333%; left: 33.333%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(6),
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(6),
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(6) { top: 33.333%; left: 66.666%; }
-  #videoGrid[data-count="7"] .tile.remote:nth-of-type(7),
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(7),
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(7) { top: 66.666%; left: 0; }
-  #videoGrid[data-count="8"] .tile.remote:nth-of-type(8),
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(8) { top: 66.666%; left: 33.333%; }
-  #videoGrid[data-count="9"] .tile.remote:nth-of-type(9) { top: 66.666%; left: 66.666%; }
-  #videoGrid[data-count="7"] .tile.remote video,
-  #videoGrid[data-count="8"] .tile.remote video,
-  #videoGrid[data-count="9"] .tile.remote video { object-fit: contain; }
-
-  /* 10+ remotes: scrollable grid */
-  #videoGrid[data-count="10"],
-  #videoGrid[data-count="11"],
-  #videoGrid[data-count="12"] {
-    display: flex;
-    flex-wrap: wrap;
-    aspect-ratio: auto;
-    height: 70vh;
-    overflow-y: auto;
+  #videoGrid[data-count="10"] .tile.remote, #videoGrid[data-count="11"] .tile.remote, #videoGrid[data-count="12"] .tile.remote {
+    position: relative; width: 25%; height: 33.333%;
   }
-  #videoGrid[data-count="10"] .tile.remote,
-  #videoGrid[data-count="11"] .tile.remote,
-  #videoGrid[data-count="12"] .tile.remote {
-    position: relative;
-    width: 25%;
-    height: 33.333%;
-  }
-  #videoGrid[data-count="10"] .tile.remote video,
-  #videoGrid[data-count="11"] .tile.remote video,
-  #videoGrid[data-count="12"] .tile.remote video { object-fit: contain; }
-  #videoGrid[data-count="10"] .tile.self-tile,
-  #videoGrid[data-count="11"] .tile.self-tile,
-  #videoGrid[data-count="12"] .tile.self-tile { position: fixed; }
+  #videoGrid[data-count="10"] .tile.self-tile, #videoGrid[data-count="11"] .tile.self-tile, #videoGrid[data-count="12"] .tile.self-tile { position: fixed; }
 
   #controls { display: none; gap: 10px; margin-top: 2px; flex-wrap: wrap; justify-content: center; width: 100%; }
   #status { font-size: 13px; color: var(--muted); margin-top: 6px; }
   #callMsg { font-size: 12.5px; color: var(--muted); text-align: center; width: 100%; min-height: 16px; }
   .id-badge { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-  /* ---- Chat panel ---- */
-  #chatPanel {
-    display: none;
-    width: 100%;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px;
-    flex-direction: column;
-    gap: 10px;
+  .side-panel {
+    display: none; width: 100%; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px; flex-direction: column; gap: 10px;
   }
-  #chatPanel.active { display: flex; }
+  .side-panel.active { display: flex; }
   #chatMessages { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px; }
   .chat-msg { font-size: 13px; padding: 7px 11px; border-radius: 10px; max-width: 82%; word-break: break-word; line-height: 1.4; }
   .chat-msg.me { align-self: flex-end; background: var(--accent); color: #fff; }
@@ -284,108 +146,46 @@
     background: #10121a; color: var(--text); font-size: 14px; min-width: 0;
   }
   .chat-input-row input:focus { outline: 1px solid var(--accent); }
-  .chat-note { font-size: 11px; color: var(--muted); text-align: center; margin: 0; }
+  .chat-note, .side-note { font-size: 11px; color: var(--muted); text-align: center; margin: 0; }
 
-  /* ====== MOBILE OPTIMIZATIONS ====== */
   @media (max-width: 640px) {
     main { padding: 14px 8px 36px; gap: 12px; }
     .card { padding: 16px; }
     .card h2 { font-size: 15px; }
     .card p { font-size: 13px; }
     button { padding: 12px 16px; font-size: 14px; }
-
-    #videoGrid {
-      aspect-ratio: 9/16;
-      max-height: 60vh;
+    #videoGrid { aspect-ratio: 9/16; max-height: 60vh; }
+    #videoGrid[data-count="1"] .tile.remote { top:0; left:0; width:100%; height:100%; border-radius:0; }
+    #videoGrid[data-count="2"] .tile.remote { left:0; width:100%; height:50%; }
+    #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { top:0; }
+    #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { top:50%; }
+    #videoGrid[data-count="3"] .tile.remote { width:50%; height:50%; }
+    #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top:0; left:0; }
+    #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top:0; left:50%; }
+    #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top:50%; left:0; width:100%; }
+    #videoGrid[data-count="4"] .tile.remote { width:50%; height:50%; }
+    #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top:0; left:0; }
+    #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top:0; left:50%; }
+    #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top:50%; left:0; }
+    #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top:50%; left:50%; }
+    #videoGrid[data-count="5"], #videoGrid[data-count="6"], #videoGrid[data-count="7"],
+    #videoGrid[data-count="8"], #videoGrid[data-count="9"], #videoGrid[data-count="10"],
+    #videoGrid[data-count="11"], #videoGrid[data-count="12"] {
+      display: flex; flex-wrap: wrap; aspect-ratio: auto; height: 60vh; overflow-y: auto;
     }
-
-    #videoGrid[data-count="1"] .tile.remote {
-      top: 0; left: 0; width: 100%; height: 100%;
-      border-radius: 0;
+    #videoGrid[data-count="5"] .tile.remote, #videoGrid[data-count="6"] .tile.remote,
+    #videoGrid[data-count="7"] .tile.remote, #videoGrid[data-count="8"] .tile.remote,
+    #videoGrid[data-count="9"] .tile.remote, #videoGrid[data-count="10"] .tile.remote,
+    #videoGrid[data-count="11"] .tile.remote, #videoGrid[data-count="12"] .tile.remote {
+      position: relative; width: 33.333%; height: 50%;
     }
-    #videoGrid[data-count="1"] .tile.remote video { object-fit: contain; }
-
-    #videoGrid[data-count="2"] .tile.remote { left: 0; width: 100%; height: 50%; }
-    #videoGrid[data-count="2"] .tile.remote:nth-of-type(1) { top: 0; }
-    #videoGrid[data-count="2"] .tile.remote:nth-of-type(2) { top: 50%; }
-    #videoGrid[data-count="2"] .tile.remote video { object-fit: contain; }
-
-    #videoGrid[data-count="3"] .tile.remote { width: 50%; height: 50%; }
-    #videoGrid[data-count="3"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
-    #videoGrid[data-count="3"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
-    #videoGrid[data-count="3"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; width: 100%; }
-    #videoGrid[data-count="3"] .tile.remote video { object-fit: contain; }
-
-    #videoGrid[data-count="4"] .tile.remote { width: 50%; height: 50%; }
-    #videoGrid[data-count="4"] .tile.remote:nth-of-type(1) { top: 0; left: 0; }
-    #videoGrid[data-count="4"] .tile.remote:nth-of-type(2) { top: 0; left: 50%; }
-    #videoGrid[data-count="4"] .tile.remote:nth-of-type(3) { top: 50%; left: 0; }
-    #videoGrid[data-count="4"] .tile.remote:nth-of-type(4) { top: 50%; left: 50%; }
-    #videoGrid[data-count="4"] .tile.remote video { object-fit: contain; }
-
-    #videoGrid[data-count="5"],
-    #videoGrid[data-count="6"],
-    #videoGrid[data-count="7"],
-    #videoGrid[data-count="8"],
-    #videoGrid[data-count="9"],
-    #videoGrid[data-count="10"],
-    #videoGrid[data-count="11"],
-    #videoGrid[data-count="12"] {
-      display: flex;
-      flex-wrap: wrap;
-      aspect-ratio: auto;
-      height: 60vh;
-      overflow-y: auto;
-    }
-    #videoGrid[data-count="5"] .tile.remote,
-    #videoGrid[data-count="6"] .tile.remote,
-    #videoGrid[data-count="7"] .tile.remote,
-    #videoGrid[data-count="8"] .tile.remote,
-    #videoGrid[data-count="9"] .tile.remote,
-    #videoGrid[data-count="10"] .tile.remote,
-    #videoGrid[data-count="11"] .tile.remote,
-    #videoGrid[data-count="12"] .tile.remote {
-      position: relative;
-      width: 33.333%;
-      height: 50%;
-    }
-    #videoGrid[data-count="5"] .tile.remote video,
-    #videoGrid[data-count="6"] .tile.remote video,
-    #videoGrid[data-count="7"] .tile.remote video,
-    #videoGrid[data-count="8"] .tile.remote video,
-    #videoGrid[data-count="9"] .tile.remote video,
-    #videoGrid[data-count="10"] .tile.remote video,
-    #videoGrid[data-count="11"] .tile.remote video,
-    #videoGrid[data-count="12"] .tile.remote video { object-fit: contain; }
-    #videoGrid[data-count="5"] .tile.self-tile,
-    #videoGrid[data-count="6"] .tile.self-tile,
-    #videoGrid[data-count="7"] .tile.self-tile,
-    #videoGrid[data-count="8"] .tile.self-tile,
-    #videoGrid[data-count="9"] .tile.self-tile,
-    #videoGrid[data-count="10"] .tile.self-tile,
-    #videoGrid[data-count="11"] .tile.self-tile,
-    #videoGrid[data-count="12"] .tile.self-tile { position: fixed; }
-
-    .tile.self-tile {
-      width: 30%;
-      max-width: 110px;
-      min-width: 70px;
-      bottom: 8px;
-      right: 8px;
-    }
-
-    #controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-    }
-    #controls button {
-      flex: 1 1 calc(50% - 8px);
-      min-width: 0;
-      padding: 14px 8px;
-      font-size: 14px;
-    }
+    #videoGrid[data-count="5"] .tile.self-tile, #videoGrid[data-count="6"] .tile.self-tile,
+    #videoGrid[data-count="7"] .tile.self-tile, #videoGrid[data-count="8"] .tile.self-tile,
+    #videoGrid[data-count="9"] .tile.self-tile, #videoGrid[data-count="10"] .tile.self-tile,
+    #videoGrid[data-count="11"] .tile.self-tile, #videoGrid[data-count="12"] .tile.self-tile { position: fixed; }
+    .tile.self-tile { width: 30%; max-width: 110px; min-width: 70px; bottom: 8px; right: 8px; }
+    #controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    #controls button { flex: 1 1 calc(50% - 8px); min-width: 0; padding: 14px 8px; font-size: 14px; }
     #controls #endBtn { flex: 1 1 100%; }
   }
 
@@ -398,21 +198,10 @@
     .chat-msg { font-size: 12.5px; max-width: 90%; }
   }
 
-  /* Tap-to-play overlay for mobile autoplay unlock */
   #tapOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    text-align: center;
-    padding: 20px;
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999;
+    align-items: center; justify-content: center; flex-direction: column; color: #fff;
+    font-size: 16px; cursor: pointer; text-align: center; padding: 20px;
   }
   #tapOverlay.show { display: flex; }
   #tapOverlay .icon { font-size: 48px; margin-bottom: 12px; }
@@ -421,7 +210,7 @@
 <body>
 
 <header>
-  <h1>Quick<span>Call Made by Ankush</span></h1>
+  <h1>Quick<span>Call</span></h1>
 </header>
 
 <main>
@@ -456,12 +245,19 @@
       <button class="btn-secondary" id="muteBtn">Mute</button>
       <button class="btn-secondary" id="camBtn">Camera Off</button>
       <button class="btn-secondary" id="shareBtn">Share Screen</button>
+      <button class="btn-secondary" id="inviteBtn">Invite</button>
       <button class="btn-secondary" id="chatToggleBtn">Chat</button>
       <button class="btn-danger" id="endBtn">End Call</button>
     </div>
     <div id="callMsg"></div>
 
-    <div id="chatPanel">
+    <div id="invitePanel" class="side-panel">
+      <p class="side-note">Share this link to bring more people into the call.</p>
+      <div id="inviteLinkBox"></div>
+      <div class="row"><button class="btn-secondary" id="inviteCopyBtn">Copy Link</button></div>
+    </div>
+
+    <div id="chatPanel" class="side-panel">
       <p class="chat-note">Messages are temporary — not saved anywhere, and disappear when the call ends.</p>
       <div id="chatMessages"></div>
       <div class="chat-input-row">
@@ -480,10 +276,34 @@
 
 <script>
 // ---------------------------------------------------------------------
+// WebRTC connectivity config — STUN + a free public TURN relay.
+//
+// Two phones on cellular data (or different WiFi networks entirely) sit
+// behind NAT that STUN alone often can't punch through. Without a TURN
+// relay, the signaling/data connection can still succeed while media
+// (and sometimes the chat data-channel) never actually flows — which
+// looks exactly like "connected but black screen, messages don't send."
+// The TURN server below is a free public relay meant for small projects
+// like this. For heavy/production use, a paid TURN provider would be
+// more reliable.
+// ---------------------------------------------------------------------
+const ICE_CONFIG = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:global.stun.twilio.com:3478' },
+    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+  ]
+};
+const PEER_OPTS = { config: ICE_CONFIG };
+
+// ---------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------
 let peer = null;
 let myId = null;
+let inviteLink = '';
 let localStream = null;
 let outgoingStream = null;
 let screenStream = null;
@@ -493,8 +313,6 @@ let camOn = true;
 let videoUnlocked = false;
 const peers = {};
 const tiles = {};
-
-const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
 // ---------------------------------------------------------------------
 // DOM refs
@@ -516,6 +334,10 @@ const controlsEl = document.getElementById('controls');
 const muteBtn = document.getElementById('muteBtn');
 const camBtn = document.getElementById('camBtn');
 const shareBtn = document.getElementById('shareBtn');
+const inviteBtn = document.getElementById('inviteBtn');
+const invitePanel = document.getElementById('invitePanel');
+const inviteLinkBox = document.getElementById('inviteLinkBox');
+const inviteCopyBtn = document.getElementById('inviteCopyBtn');
 const chatToggleBtn = document.getElementById('chatToggleBtn');
 const endBtn = document.getElementById('endBtn');
 const callMsg = document.getElementById('callMsg');
@@ -524,12 +346,6 @@ const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
 const tapOverlay = document.getElementById('tapOverlay');
-
-function hideInviteLink() {
-  linkBox.style.display = 'none';
-  copyRow.style.display = 'none';
-  setupCard.style.display = 'none';
-}
 
 function showCallMsg(text, timeout) {
   callMsg.textContent = text;
@@ -550,12 +366,11 @@ function shortLabel(id) {
 }
 
 async function getLocalStream() {
-  if (localStream && localStream.getTracks().some(t => t.readyState === 'live')) {
+  if (localStream && localStream.getTracks().some((t) => t.readyState === 'live')) {
     return localStream;
   }
-  // Reset stale stream
   if (localStream) {
-    localStream.getTracks().forEach(t => t.stop());
+    localStream.getTracks().forEach((t) => t.stop());
     localStream = null;
   }
   localStream = await navigator.mediaDevices.getUserMedia({
@@ -573,10 +388,7 @@ function safePlay(videoEl) {
   const p = videoEl.play();
   if (p && typeof p.catch === 'function') {
     p.catch(() => {
-      // Autoplay blocked — show tap overlay
-      if (!videoUnlocked) {
-        tapOverlay.classList.add('show');
-      }
+      if (!videoUnlocked) tapOverlay.classList.add('show');
     });
   }
 }
@@ -585,44 +397,44 @@ function unlockVideos() {
   videoUnlocked = true;
   tapOverlay.classList.remove('show');
   Object.values(tiles).forEach((t) => {
-    if (t.video && t.video.paused && t.video.srcObject) {
-      safePlay(t.video);
-    }
+    if (t.video && t.video.paused && t.video.srcObject) safePlay(t.video);
   });
 }
-
 tapOverlay.addEventListener('click', unlockVideos);
 tapOverlay.addEventListener('touchstart', unlockVideos);
+['touchstart', 'click', 'keydown'].forEach((evt) => {
+  document.body.addEventListener(evt, () => { if (!videoUnlocked) unlockVideos(); }, { once: true, passive: true });
+});
+
+function attachStreamToVideo(videoEl, stream) {
+  if (!videoEl || !stream) return;
+  try { videoEl.srcObject = stream; }
+  catch (e) { try { videoEl.src = URL.createObjectURL(stream); } catch (e2) {} }
+  const tryPlay = () => safePlay(videoEl);
+  videoEl.onloadedmetadata = tryPlay;
+  tryPlay();
+}
 
 // ---------------------------------------------------------------------
 // Dynamic grid layout
 // ---------------------------------------------------------------------
 function updateGridLayout() {
-  const remoteCount = Object.keys(tiles).filter(id => id !== 'self').length;
+  const remoteCount = Object.keys(tiles).filter((id) => id !== 'self').length;
   videoGrid.dataset.count = Math.min(remoteCount, 12);
 }
 
 function ensureTile(id, label) {
   if (tiles[id]) return tiles[id];
   const wrap = document.createElement('div');
-  wrap.className = 'tile';
-  if (id === 'self') {
-    wrap.classList.add('self-tile');
-  } else {
-    wrap.classList.add('remote');
-  }
+  wrap.className = 'tile ' + (id === 'self' ? 'self-tile' : 'remote');
 
   const video = document.createElement('video');
   video.autoplay = true;
   video.playsInline = true;
   video.setAttribute('playsinline', '');
   video.setAttribute('webkit-playsinline', '');
-  video.setAttribute('autoplay', '');
   video.controls = false;
-  if (id === 'self') {
-    video.muted = true;
-    video.setAttribute('muted', '');
-  }
+  if (id === 'self') video.muted = true;
   wrap.appendChild(video);
 
   const labelEl = document.createElement('div');
@@ -642,11 +454,8 @@ function ensureTile(id, label) {
           showCallMsg('Picture-in-picture is not supported on this browser.', 3500);
           return;
         }
-        if (document.pictureInPictureElement === video) {
-          await document.exitPictureInPicture();
-        } else {
-          await video.requestPictureInPicture();
-        }
+        if (document.pictureInPictureElement === video) await document.exitPictureInPicture();
+        else await video.requestPictureInPicture();
       } catch (err) {
         showCallMsg('Could not enter picture-in-picture mode.', 3500);
       }
@@ -656,8 +465,8 @@ function ensureTile(id, label) {
 
   videoGrid.appendChild(wrap);
   tiles[id] = { wrap, video };
-  updateParticipantCount();
   updateGridLayout();
+  updateParticipantCount();
   return tiles[id];
 }
 
@@ -668,13 +477,20 @@ function removeTile(id) {
     t.wrap.remove();
     delete tiles[id];
   }
-  updateParticipantCount();
   updateGridLayout();
+  updateParticipantCount();
 }
 
 function updateParticipantCount() {
   const n = Object.keys(tiles).length;
-  participantCount.textContent = n <= 1 ? 'Just you so far — share the link to bring others in.' : n + ' people in the call';
+  participantCount.textContent = n <= 1
+    ? 'Just you so far — share the link to bring others in.'
+    : n + ' people in the call';
+
+  if (n > 1 && setupCard.style.display !== 'none') {
+    setupCard.style.display = 'none';
+    showCallMsg('Someone joined — the link box is now hidden. Tap "Invite" to share it again anytime.', 5000);
+  }
 }
 
 function showCallUI() {
@@ -684,41 +500,20 @@ function showCallUI() {
   controlsEl.style.display = 'flex';
 }
 
-function attachStreamToVideo(videoEl, stream) {
-  if (!videoEl || !stream) return;
-  try {
-    videoEl.srcObject = stream;
-  } catch (e) {
-    // Old browsers
-    try { videoEl.src = URL.createObjectURL(stream); } catch (e2) {}
-  }
-  // Force play after metadata loads (mobile-safe)
-  const tryPlay = () => safePlay(videoEl);
-  videoEl.onloadedmetadata = tryPlay;
-  tryPlay();
-}
-
 // ---------------------------------------------------------------------
 // Mesh networking
 // ---------------------------------------------------------------------
 function registerCall(id, call) {
   if (!peers[id]) peers[id] = {};
   peers[id].call = call;
-
   call.on('stream', (remoteStream) => {
     const tile = ensureTile(id, shortLabel(id));
     attachStreamToVideo(tile.video, remoteStream);
-    updateGridLayout();
-    // Hide invite link as soon as someone actually joins
-    hideInviteLink();
-    statusEl.textContent = '';
   });
-
   call.on('close', () => { removeTile(id); if (peers[id]) delete peers[id].call; });
   call.on('error', (err) => {
     console.error('call error', err);
-    showCallMsg('Call error with a peer — they may have left.', 3500);
-    removeTile(id);
+    showCallMsg('Call error with a participant — they may have dropped.', 3500);
   });
 }
 
@@ -730,29 +525,28 @@ function registerConn(id, conn) {
   conn.on('error', (err) => console.error('conn error', err));
 }
 
-async function connectToPeer(id, sendJoinMsg) {
-  if (!id || id === myId || peers[id]) return;
+// Exactly one side of every pair places the actual media call — whichever
+// peer ID sorts first. This must be checked from BOTH directions (whoever
+// initiates the data connection, and whoever merely receives one), or a
+// pair can end up where neither side ever calls — which shows as a
+// permanent black screen even though signaling "succeeded".
+function maybeCall(id) {
+  if (!id || id === myId) return;
+  if (peers[id] && peers[id].call) return;
+  if (!(myId < id)) return; // the other side is responsible for calling
+  if (!outgoingStream) return;
+  const call = peer.call(id, outgoingStream);
+  if (call) registerCall(id, call);
+}
 
-  // Data connection — both sides may open one, that's fine
+function connectToPeer(id, sendJoinMsg) {
+  if (!id || id === myId || (peers[id] && peers[id].conn)) return;
   const conn = peer.connect(id, { reliable: true });
   registerConn(id, conn);
   if (sendJoinMsg) {
     conn.on('open', () => conn.send({ type: 'join', id: myId }));
   }
-
-  // Ensure we actually have a local stream before calling
-  if (!outgoingStream) {
-    try { outgoingStream = await getLocalStream(); }
-    catch (e) { console.error('No local stream for call', e); return; }
-  }
-
-  // Only the peer with the lexicographically smaller ID initiates the media call.
-  // This prevents both sides calling each other at the same time (glare).
-  if (myId && id && myId < id) {
-    const call = peer.call(id, outgoingStream);
-    if (call) registerCall(id, call);
-  }
-  // Otherwise we wait for the other side to call us (handled in peer.on('call')).
+  maybeCall(id);
 }
 
 function sendTo(id, msg) {
@@ -762,9 +556,7 @@ function sendTo(id, msg) {
 
 function broadcast(msg, excludeIds) {
   excludeIds = excludeIds || [];
-  Object.keys(peers).forEach((id) => {
-    if (!excludeIds.includes(id)) sendTo(id, msg);
-  });
+  Object.keys(peers).forEach((id) => { if (!excludeIds.includes(id)) sendTo(id, msg); });
 }
 
 function handleMessage(fromId, msg) {
@@ -784,7 +576,6 @@ function handleMessage(fromId, msg) {
 
 function initPeerEvents() {
   peer.on('call', async (call) => {
-    // Ensure we have a stream ready to answer with
     if (!outgoingStream) {
       try { outgoingStream = await getLocalStream(); }
       catch (e) { console.error('Cannot answer without stream', e); return; }
@@ -792,13 +583,14 @@ function initPeerEvents() {
     try {
       call.answer(outgoingStream);
       registerCall(call.peer, call);
-    } catch (e) {
-      console.error('answer error', e);
-    }
+    } catch (e) { console.error('answer error', e); }
   });
 
   peer.on('connection', (conn) => {
     registerConn(conn.peer, conn);
+    // The peer that connects to us might be the one whose ID means WE
+    // should place the call — check both directions here too.
+    maybeCall(conn.peer);
   });
 
   peer.on('error', (err) => {
@@ -849,30 +641,30 @@ createBtn.addEventListener('click', async () => {
   }
   outgoingStream = localStream;
 
-  peer = new Peer(roomId);
+  peer = new Peer(roomId, PEER_OPTS);
   initPeerEvents();
 
   const openTimeout = setTimeout(() => {
-    statusEl.textContent = 'Still trying to connect… this is taking longer than usual. Some mobile data/WiFi networks (especially college or office WiFi) block the connection this needs. Try switching networks, or refresh and try again.';
+    statusEl.textContent = 'Still trying to connect… this is taking longer than usual. Some mobile data/WiFi networks block the connection this needs. Try switching networks, or refresh and try again.';
   }, 8000);
 
   peer.on('open', (id) => {
     clearTimeout(openTimeout);
     myId = id;
-    const link = window.location.origin + window.location.pathname + '?room=' + id;
+    inviteLink = window.location.origin + window.location.pathname + '?room=' + id;
+
     linkBox.style.display = 'block';
-    linkBox.textContent = link;
+    linkBox.textContent = inviteLink;
     copyRow.style.display = 'flex';
     statusEl.textContent = 'Call created — send the link below to as many people as you like.';
 
     copyBtn.onclick = () => {
-      navigator.clipboard.writeText(link).then(() => {
+      navigator.clipboard.writeText(inviteLink).then(() => {
         copyBtn.textContent = 'Copied!';
         setTimeout(() => (copyBtn.textContent = 'Copy Link'), 1500);
       }).catch(() => {
-        // Fallback for older mobile browsers
         const ta = document.createElement('textarea');
-        ta.value = link;
+        ta.value = inviteLink;
         document.body.appendChild(ta);
         ta.select();
         try { document.execCommand('copy'); copyBtn.textContent = 'Copied!'; } catch (e) {}
@@ -888,7 +680,6 @@ createBtn.addEventListener('click', async () => {
     createBtn.style.display = 'none';
     callArea.style.display = 'flex';
     controlsEl.style.display = 'flex';
-    updateGridLayout();
   });
 });
 
@@ -915,7 +706,7 @@ if (roomFromUrl) {
     }
     outgoingStream = localStream;
 
-    peer = new Peer();
+    peer = new Peer(undefined, PEER_OPTS);
     initPeerEvents();
 
     const openTimeout = setTimeout(() => {
@@ -925,10 +716,11 @@ if (roomFromUrl) {
     peer.on('open', (id) => {
       clearTimeout(openTimeout);
       myId = id;
+      inviteLink = window.location.href;
+
       const selfTile = ensureTile('self', 'You');
       attachStreamToVideo(selfTile.video, outgoingStream);
       showCallUI();
-      updateGridLayout();
       connectToPeer(roomFromUrl, true);
     });
   });
@@ -937,6 +729,30 @@ if (roomFromUrl) {
     window.location.href = window.location.pathname;
   });
 }
+
+// ---------------------------------------------------------------------
+// Invite panel
+// ---------------------------------------------------------------------
+inviteBtn.addEventListener('click', () => {
+  inviteLinkBox.textContent = inviteLink || 'Link not available yet.';
+  invitePanel.classList.toggle('active');
+  inviteBtn.classList.toggle('active');
+});
+inviteCopyBtn.addEventListener('click', () => {
+  if (!inviteLink) return;
+  navigator.clipboard.writeText(inviteLink).then(() => {
+    inviteCopyBtn.textContent = 'Copied!';
+    setTimeout(() => (inviteCopyBtn.textContent = 'Copy Link'), 1500);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = inviteLink;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); inviteCopyBtn.textContent = 'Copied!'; } catch (e) {}
+    document.body.removeChild(ta);
+    setTimeout(() => (inviteCopyBtn.textContent = 'Copy Link'), 1500);
+  });
+});
 
 // ---------------------------------------------------------------------
 // Mic / camera controls
@@ -961,7 +777,6 @@ endBtn.addEventListener('click', endCall);
 // Screen sharing
 // ---------------------------------------------------------------------
 const screenShareSupported = !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
-
 if (!screenShareSupported) {
   shareBtn.disabled = true;
   shareBtn.title = 'Screen sharing is not supported on this browser';
@@ -971,46 +786,35 @@ function replaceOutgoingVideoTrackAll(newTrack) {
   Object.values(peers).forEach((p) => {
     if (p.call && p.call.peerConnection) {
       const sender = p.call.peerConnection.getSenders().find((s) => s.track && s.track.kind === 'video');
-      if (sender) sender.replaceTrack(newTrack).catch(err => console.warn('replaceTrack', err));
+      if (sender) sender.replaceTrack(newTrack).catch((err) => console.warn('replaceTrack', err));
     }
   });
 }
 
 shareBtn.addEventListener('click', async () => {
   if (!screenShareSupported) {
-    showCallMsg('Screen sharing isn\'t supported on this browser. Try on a desktop Chrome, Edge, or Firefox, or on Android Chrome.', 6000);
+    showCallMsg('Screen sharing isn\'t supported on this browser/device. Apple blocks it entirely on iOS, and it\'s inconsistent on Android — it works reliably on desktop Chrome, Edge, or Firefox.', 7000);
     return;
   }
 
   if (!isScreenSharing) {
     try {
-      screenStream = await navigator.mediaDevices.getDisplayMedia({
-        video: { cursor: 'always' },
-        audio: false
-      });
+      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: 'always' }, audio: false });
     } catch (e) {
       console.warn('getDisplayMedia error:', e);
-      if (e && e.name === 'NotAllowedError') {
-        showCallMsg('Screen share was cancelled or permission was denied.', 4000);
-      } else if (e && e.name === 'NotSupportedError') {
-        showCallMsg('Screen sharing is not supported on this device.', 5000);
-      } else if (e && e.name === 'TypeError') {
-        showCallMsg('Screen sharing needs a secure context (HTTPS). Please use the https:// link.', 5000);
-      } else {
-        showCallMsg('Could not start screen sharing on this device.', 5000);
-      }
+      if (e && e.name === 'NotAllowedError') showCallMsg('Screen share was cancelled or permission was denied.', 4000);
+      else if (e && e.name === 'NotSupportedError') showCallMsg('Screen sharing is not supported on this device.', 5000);
+      else if (e && e.name === 'TypeError') showCallMsg('Screen sharing needs a secure context (HTTPS). Use the https:// link.', 5000);
+      else showCallMsg('Could not start screen sharing on this device.', 5000);
       return;
     }
-
     const screenTrack = screenStream.getVideoTracks()[0];
     const audioTracks = localStream ? localStream.getAudioTracks() : [];
     outgoingStream = new MediaStream([screenTrack, ...audioTracks]);
 
     replaceOutgoingVideoTrackAll(screenTrack);
     const selfTile = tiles['self'];
-    if (selfTile) {
-      attachStreamToVideo(selfTile.video, outgoingStream);
-    }
+    if (selfTile) attachStreamToVideo(selfTile.video, outgoingStream);
 
     isScreenSharing = true;
     shareBtn.textContent = 'Stop Sharing';
@@ -1033,9 +837,7 @@ function stopScreenShare() {
       outgoingStream = localStream;
       replaceOutgoingVideoTrackAll(camTrack);
       const selfTile = tiles['self'];
-      if (selfTile) {
-        attachStreamToVideo(selfTile.video, outgoingStream);
-      }
+      if (selfTile) attachStreamToVideo(selfTile.video, outgoingStream);
     }
   }
   isScreenSharing = false;
@@ -1080,32 +882,16 @@ chatToggleBtn.addEventListener('click', () => {
 });
 
 // ---------------------------------------------------------------------
-// Keep videos playing — resilient to mobile backgrounding
+// Resume video after backgrounding
 // ---------------------------------------------------------------------
 function resumeAllVideos() {
   Object.values(tiles).forEach((t) => {
-    if (t.video && t.video.srcObject && t.video.paused) {
-      safePlay(t.video);
-    }
+    if (t.video && t.video.srcObject && t.video.paused) safePlay(t.video);
   });
 }
-
-window.addEventListener('pageshow', (event) => {
-  if (event.persisted) resumeAllVideos();
-  resumeAllVideos();
-});
+window.addEventListener('pageshow', () => resumeAllVideos());
 window.addEventListener('focus', resumeAllVideos);
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) resumeAllVideos();
-});
-
-// Unlock autoplay on first user gesture anywhere
-['touchstart', 'click', 'keydown'].forEach(evt => {
-  document.body.addEventListener(evt, () => {
-    if (!videoUnlocked) unlockVideos();
-  }, { once: true, passive: true });
-});
-
+document.addEventListener('visibilitychange', () => { if (!document.hidden) resumeAllVideos(); });
 </script>
 
 </body>
