@@ -171,6 +171,19 @@
     font-size: 30px;
     font-weight: 600;
   }
+  .tile .status {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    background: rgba(15, 17, 21, 0.78);
+  }
   .tag {
     position: absolute;
     bottom: 8px;
@@ -260,6 +273,25 @@
     color: var(--text);
   }
   button.chip:hover { background: rgba(0, 0, 0, 0.75); }
+
+  .chips { display: flex; gap: 8px; }
+  #diag {
+    position: absolute;
+    z-index: 9;
+    top: calc(54px + env(safe-area-inset-top));
+    left: 10px;
+    right: 10px;
+    max-width: 520px;
+    margin: 0;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font: 12px/1.5 ui-monospace, Menlo, Consolas, monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #cfd3e0;
+  }
 
   /* Waiting box */
   #waitBox {
@@ -434,7 +466,7 @@
 <!-- ============ LOBBY ============ -->
 <div id="lobby">
   <header>
-    <h1>Quick<span>Call ankush</span></h1>
+    <h1>Quick<span>Call</span></h1>
   </header>
 
   <main>
@@ -474,14 +506,16 @@
       </div>
 
       <div id="topBar">
-        <span class="chip" id="countChip">1 in call</span>
+        <div class="chips"><span class="chip" id="countChip">1 in call</span><button class="chip" id="infoBtn" type="button">Info</button></div>
         <button class="chip" id="inviteBtn" type="button"></button>
       </div>
+
+      <pre id="diag" hidden></pre>
 
       <div id="waitBox">
         <div id="waitHost" hidden>
           <h3>Waiting for others to join…</h3>
-          <p>Send this link to the people you want to call.</p>
+          <p>Send this link to the people you want to call. Keep this page open while you share it — switching apps for too long can pause your camera.</p>
           <div id="linkBox"></div>
           <div class="row">
             <button class="btn-primary" id="waitCopy" type="button">Copy Link</button>
@@ -525,6 +559,34 @@
 'use strict';
 
 const MAX_PARTICIPANTS = 8;   // mesh calls get heavy beyond this
+
+/* ---------- Network settings ----------
+   STUN lets two devices find each other. It is NOT enough when people are on
+   different networks (mobile data, office / college Wi-Fi). For that you need a
+   TURN relay. Get free credentials at https://www.metered.ca (Open Relay, 20 GB/month),
+   then paste the username and credential from your dashboard below. */
+const TURN_USERNAME = '';
+const TURN_CREDENTIAL = '';
+
+const ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun.relay.metered.ca:80' }
+];
+if (TURN_USERNAME && TURN_CREDENTIAL) {
+  [
+    'turn:standard.relay.metered.ca:80',
+    'turn:standard.relay.metered.ca:80?transport=tcp',
+    'turn:standard.relay.metered.ca:443',
+    'turns:standard.relay.metered.ca:443?transport=tcp'
+  ].forEach((u) => ICE_SERVERS.push({ urls: u, username: TURN_USERNAME, credential: TURN_CREDENTIAL }));
+}
+const PEER_OPTIONS = { config: { iceServers: ICE_SERVERS } };
+
+const MEDIA_CONSTRAINTS = {
+  video: { width: { ideal: 960 }, height: { ideal: 540 }, facingMode: 'user' },
+  audio: { echoCancellation: true, noiseSuppression: true }
+};
 const $ = (id) => document.getElementById(id);
 
 /* ---------- Icons ---------- */
@@ -549,7 +611,7 @@ const statusEl = $('status'), joinStatus = $('joinStatus');
 const grid = $('grid'), localTile = $('localTile'), localVideo = $('localVideo');
 const localAvatar = $('localAvatar'), localMicOff = $('localMicOff');
 const stageVideos = $('stageVideos');
-const countChip = $('countChip'), inviteBtn = $('inviteBtn');
+const countChip = $('countChip'), inviteBtn = $('inviteBtn'), infoBtn = $('infoBtn'), diag = $('diag');
 const waitBox = $('waitBox'), waitHost = $('waitHost'), waitGuest = $('waitGuest');
 const linkBox = $('linkBox'), waitCopy = $('waitCopy'), waitShare = $('waitShare');
 const micBtn = $('micBtn'), camBtn = $('camBtn'), chatBtn = $('chatBtn'), endBtn = $('endBtn');
@@ -608,10 +670,7 @@ async function copyText(text) {
 async function getLocalStream() {
   if (state.localStream) return state.localStream;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('unsupported');
-  state.localStream = await navigator.mediaDevices.getUserMedia({
-    video: { width: { ideal: 960 }, height: { ideal: 540 }, facingMode: 'user' },
-    audio: { echoCancellation: true, noiseSuppression: true }
-  });
+  state.localStream = await navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINTS);
   return state.localStream;
 }
 
@@ -680,13 +739,20 @@ function addTile(p) {
   t.innerHTML =
     '<video autoplay playsinline></video>' +
     '<div class="avatar"><span></span></div>' +
+    '<div class="status" hidden></div>' +
     '<div class="tag"><span class="tname"></span><span class="mic-off" hidden>' + svg(ic.mic + ic.slash, 14) + '</span></div>';
-  t.addEventListener('click', () => t.classList.toggle('fill'));
+  const v = t.querySelector('video');
+  t.addEventListener('click', () => {
+    if (p.needsTap) {
+      v.play().then(() => { p.needsTap = false; updateTile(p); }).catch(() => {});
+      return;
+    }
+    t.classList.toggle('fill');
+  });
   grid.appendChild(t);
   p.tile = t;
-  const v = t.querySelector('video');
   v.srcObject = p.stream;
-  v.play().catch(() => {});
+  v.play().catch(() => { p.needsTap = true; updateTile(p); });
   state.connected = true;
   updateTile(p);
   updateLayout();
@@ -698,6 +764,41 @@ function updateTile(p) {
   p.tile.querySelector('.avatar span').textContent = initial(p.name);
   p.tile.querySelector('.avatar').classList.toggle('show', !p.cam);
   p.tile.querySelector('.mic-off').hidden = p.mic;
+
+  const st = p.tile.querySelector('.status');
+  const s = p.ice;
+  if (p.needsTap) {
+    st.hidden = false;
+    st.textContent = 'Tap here to start video and sound';
+  } else if (s === 'failed') {
+    st.hidden = false;
+    st.textContent = 'Could not connect. One of your networks is blocking direct calls, so a TURN server is needed (see the setup notes).';
+  } else if (s === 'disconnected') {
+    st.hidden = false;
+    st.textContent = 'Connection lost. Trying to reconnect…';
+  } else if (s === 'new' || s === 'checking') {
+    st.hidden = false;
+    st.textContent = 'Connecting…';
+  } else if (p.noMedia) {
+    st.hidden = false;
+    st.textContent = 'Connected, but no video is arriving from ' + p.name + '. Ask them to keep this page open and allow the camera.';
+  } else {
+    st.hidden = true;
+  }
+}
+
+// Track the real network connection state of each call
+function watchIce(p, call) {
+  const pc = call.peerConnection;
+  if (!pc) return;
+  const update = () => {
+    const prev = p.ice;
+    p.ice = pc.iceConnectionState;
+    if (p.ice === 'failed' && prev !== 'failed') toast('Could not connect to ' + p.name + '. The network may be blocking the call.', 4500);
+    updateTile(p);
+  };
+  pc.addEventListener('iceconnectionstatechange', update);
+  update();
 }
 
 function removePeer(id) {
@@ -805,6 +906,7 @@ function roomIsFull(excludeId) {
 function wireCall(call) {
   const p = ensurePeer(call.peer);
   p.call = call;
+  watchIce(p, call);
   call.on('stream', (stream) => {
     if (p.stream && p.stream.id === stream.id) return; // PeerJS can fire this once per track
     p.stream = stream;
@@ -898,7 +1000,10 @@ function setupPeerHandlers(peer) {
   peer.on('error', (err) => {
     console.error(err);
     const t = err.type;
-    if (t === 'unavailable-id') return resetToLobby('Could not create the call. Please try again.');
+    if (t === 'unavailable-id') {
+      if (!state.started) return resetToLobby('Could not create the call. Please try again.');
+      return;
+    }
     if (t === 'browser-incompatible') return resetToLobby('Your browser does not support video calls.');
     if (t === 'peer-unavailable') {
       if (!state.isHost && !state.connected) return resetToLobby('Could not reach the host. The link may be old, or the host has left.');
@@ -914,6 +1019,9 @@ function setupPeerHandlers(peer) {
 function enterCall() {
   state.closing = false;
   document.body.classList.add('in-call');
+  requestWakeLock();
+  clearInterval(state.statsTimer);
+  state.statsTimer = setInterval(pollStats, 2000);
   localVideo.srcObject = state.localStream;
   localVideo.play().catch(() => {});
   waitHost.hidden = !state.isHost;
@@ -924,8 +1032,128 @@ function enterCall() {
   updateLayout();
 }
 
+const kb = (b) => (b == null ? '-' : Math.round(b / 1024) + ' KB');
+
+// Every 2s: is video/sound really arriving, and through which route?
+async function pollStats() {
+  for (const p of [...state.peers.values()]) {
+    const pc = p.call && p.call.peerConnection;
+    if (!pc) continue;
+    try {
+      const report = await pc.getStats();
+      let vBytes = 0, aBytes = 0, pairId = null, pair = null;
+      report.forEach((r) => {
+        if (r.type === 'inbound-rtp') {
+          if (r.kind === 'video') vBytes += r.bytesReceived || 0;
+          if (r.kind === 'audio') aBytes += r.bytesReceived || 0;
+        }
+        if (r.type === 'transport' && r.selectedCandidatePairId) pairId = r.selectedCandidatePairId;
+      });
+      if (pairId) pair = report.get(pairId);
+      if (!pair) report.forEach((r) => { if (r.type === 'candidate-pair' && r.nominated && r.state === 'succeeded') pair = r; });
+      if (pair) {
+        const l = report.get(pair.localCandidateId), rm = report.get(pair.remoteCandidateId);
+        p.route = (l ? l.candidateType : '?') + ' / ' + (rm ? rm.candidateType : '?');
+      }
+
+      const connected = p.ice === 'connected' || p.ice === 'completed';
+      if (connected) {
+        if (!p.connectedAt) p.connectedAt = Date.now();
+        p.stall = (vBytes === p.vBytes) ? (p.stall || 0) + 1 : 0;
+        const noMedia = Date.now() - p.connectedAt > 6000 && (vBytes === 0 || p.stall >= 3);
+        if (noMedia !== p.noMedia) { p.noMedia = noMedia; updateTile(p); }
+      } else {
+        p.connectedAt = null;
+        p.stall = 0;
+        p.noMedia = false;
+      }
+      p.vBytes = vBytes;
+      p.aBytes = aBytes;
+    } catch (e) { /* ignore */ }
+  }
+  renderDiag();
+}
+
+function renderDiag() {
+  if (diag.hidden) return;
+  const tracks = state.localStream
+    ? state.localStream.getTracks().map((t) => t.kind + ':' + t.readyState + (t.muted ? '/muted' : '') + (t.enabled ? '' : '/off')).join('  ')
+    : 'none';
+  const lines = [
+    'You (' + state.myName + ', ' + (state.isHost ? 'host' : 'guest') + ')',
+    ' your camera/mic: ' + tracks,
+    ' page: ' + location.protocol + '//' + location.host,
+    ' relay (TURN): ' + (TURN_USERNAME ? 'configured' : 'NOT set'),
+    ' signalling: ' + (state.peer ? (state.peer.disconnected ? 'DISCONNECTED' : 'ok') : 'none')
+  ];
+  if (!state.peers.size) lines.push('', 'Nobody else is connected yet.');
+  state.peers.forEach((p) => {
+    const v = p.tile && p.tile.querySelector('video');
+    lines.push(
+      '',
+      p.name,
+      ' network: ' + (p.ice || '-') + '   route: ' + (p.route || '-'),
+      ' video: ' + kb(p.vBytes) + ' received, ' + (v && v.videoWidth ? v.videoWidth + 'x' + v.videoHeight : 'no frames'),
+      ' audio: ' + kb(p.aBytes) + ' received',
+      ' chat link: ' + (p.conn && p.conn.open ? 'open' : 'closed')
+    );
+  });
+  diag.textContent = lines.join('\n');
+}
+
+let wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator && document.visibilityState === 'visible') {
+      wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch (e) { /* not supported or denied */ }
+}
+
+// If the phone paused the camera while the page was in the background, get it back
+async function refreshLocalMedia() {
+  try {
+    const fresh = await navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINTS);
+    fresh.getAudioTracks().forEach((t) => (t.enabled = state.micOn));
+    fresh.getVideoTracks().forEach((t) => (t.enabled = state.camOn));
+    state.peers.forEach((p) => {
+      const pc = p.call && p.call.peerConnection;
+      if (!pc) return;
+      pc.getSenders().forEach((s) => {
+        const kind = s.track && s.track.kind;
+        const nt = fresh.getTracks().find((t) => t.kind === kind);
+        if (nt) s.replaceTrack(nt).catch(() => {});
+      });
+    });
+    const old = state.localStream;
+    state.localStream = fresh;
+    localVideo.srcObject = fresh;
+    if (old) old.getTracks().forEach((t) => t.stop());
+  } catch (e) {
+    toast(mediaErrorMessage(e));
+  }
+}
+
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState !== 'visible' || !state.localStream) return;
+  requestWakeLock();
+  if (state.peer && state.peer.disconnected && !state.peer.destroyed) {
+    try { state.peer.reconnect(); } catch (e) {}
+  }
+  if (state.localStream.getTracks().some((t) => t.readyState === 'ended')) await refreshLocalMedia();
+  grid.querySelectorAll('video').forEach((v) => { if (v.paused) v.play().catch(() => {}); });
+});
+
+// Some phones only allow sound after a tap: any tap starts paused videos
+document.addEventListener('click', () => {
+  grid.querySelectorAll('video').forEach((v) => { if (v.paused) v.play().catch(() => {}); });
+  state.peers.forEach((p) => { if (p.needsTap) { p.needsTap = false; updateTile(p); } });
+});
+
 function cleanup() {
   state.closing = true;
+  clearInterval(state.statsTimer);
+  try { wakeLock && wakeLock.release(); } catch (e) {}
   broadcast({ type: 'bye' });
   state.peers.forEach((p) => {
     try { p.call && p.call.close(); } catch (e) {}
@@ -982,7 +1210,7 @@ createBtn.addEventListener('click', async () => {
   }
 
   state.roomId = genId();
-  const peer = new Peer(state.roomId);
+  const peer = new Peer(state.roomId, PEER_OPTIONS);
   state.peer = peer;
   setupPeerHandlers(peer);
 
@@ -1020,7 +1248,7 @@ if (roomFromUrl) {
       return;
     }
 
-    const peer = new Peer();
+    const peer = new Peer(undefined, PEER_OPTIONS);
     state.peer = peer;
     setupPeerHandlers(peer);
 
@@ -1069,6 +1297,7 @@ async function copyInvite() {
   toast(ok ? 'Invite link copied' : 'Could not copy. Select the link and copy it manually.');
 }
 inviteBtn.addEventListener('click', copyInvite);
+infoBtn.addEventListener('click', () => { diag.hidden = !diag.hidden; renderDiag(); });
 waitCopy.addEventListener('click', copyInvite);
 
 if (navigator.share) {
