@@ -146,6 +146,10 @@
     overflow: hidden;
   }
   .tile video { width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
+  /* Other people's video: show the whole picture (no cropping). Tap a tile to switch to fill mode. */
+  .tile:not(#localTile) { cursor: pointer; }
+  .tile:not(#localTile) video { object-fit: contain; }
+  .tile.fill:not(#localTile) video { object-fit: cover; }
 
   .avatar {
     position: absolute;
@@ -430,7 +434,7 @@
 <!-- ============ LOBBY ============ -->
 <div id="lobby">
   <header>
-    <h1>Quick<span>Call</span></h1>
+    <h1>Quick<span>Call ankush</span></h1>
   </header>
 
   <main>
@@ -677,6 +681,7 @@ function addTile(p) {
     '<video autoplay playsinline></video>' +
     '<div class="avatar"><span></span></div>' +
     '<div class="tag"><span class="tname"></span><span class="mic-off" hidden>' + svg(ic.mic + ic.slash, 14) + '</span></div>';
+  t.addEventListener('click', () => t.classList.toggle('fill'));
   grid.appendChild(t);
   p.tile = t;
   const v = t.querySelector('video');
