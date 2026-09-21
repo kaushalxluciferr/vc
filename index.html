@@ -565,12 +565,26 @@ const MAX_PARTICIPANTS = 8;   // mesh calls get heavy beyond this
    different networks (mobile data, office / college Wi-Fi). For that you need a
    TURN relay. Get free credentials at https://www.metered.ca (Open Relay, 20 GB/month),
    then paste the username and credential from your dashboard below. */
+
+// EASIEST: in the Metered dashboard (TURN Server page) click "Instructions" next to your credential,
+// copy the objects that have "turn:" / "turns:" urls, and paste them between the brackets below.
+// Example item:  { urls: 'turn:global.relay.metered.ca:80', username: 'abc', credential: 'xyz' },
+const TURN_SERVERS = [
+  // Metered relay (same credential tried on both of Metered's server names)
+  { urls: 'turn:global.relay.metered.ca:80',                  username: '7306cdbd44188531a2ae5094', credential: 'vRKJdS+DQlhzWu3t' },
+  { urls: 'turn:global.relay.metered.ca:443',                 username: '7306cdbd44188531a2ae5094', credential: 'vRKJdS+DQlhzWu3t' },
+  { urls: 'turns:global.relay.metered.ca:443?transport=tcp',  username: '7306cdbd44188531a2ae5094', credential: 'vRKJdS+DQlhzWu3t' },
+  { urls: 'turn:standard.relay.metered.ca:80',                username: '7306cdbd44188531a2ae5094', credential: 'vRKJdS+DQlhzWu3t' },
+  { urls: 'turn:standard.relay.metered.ca:443',               username: '7306cdbd44188531a2ae5094', credential: 'vRKJdS+DQlhzWu3t' },
+  { urls: 'turns:standard.relay.metered.ca:443?transport=tcp', username: '7306cdbd44188531a2ae5094', credential: 'vRKJdS+DQlhzWu3t' }
+];
+
+// Alternative: only fill these two (uses the free "standard" Metered servers)
 const TURN_USERNAME = '';
 const TURN_CREDENTIAL = '';
 
 const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
   { urls: 'stun:stun.relay.metered.ca:80' }
 ];
 if (TURN_USERNAME && TURN_CREDENTIAL) {
@@ -581,6 +595,8 @@ if (TURN_USERNAME && TURN_CREDENTIAL) {
     'turns:standard.relay.metered.ca:443?transport=tcp'
   ].forEach((u) => ICE_SERVERS.push({ urls: u, username: TURN_USERNAME, credential: TURN_CREDENTIAL }));
 }
+TURN_SERVERS.forEach((srv) => ICE_SERVERS.push(srv));
+const HAS_TURN = TURN_SERVERS.length > 0 || !!(TURN_USERNAME && TURN_CREDENTIAL);
 const PEER_OPTIONS = { config: { iceServers: ICE_SERVERS } };
 
 const MEDIA_CONSTRAINTS = {
@@ -1083,7 +1099,7 @@ function renderDiag() {
     'You (' + state.myName + ', ' + (state.isHost ? 'host' : 'guest') + ')',
     ' your camera/mic: ' + tracks,
     ' page: ' + location.protocol + '//' + location.host,
-    ' relay (TURN): ' + (TURN_USERNAME ? 'configured' : 'NOT set'),
+    ' relay (TURN): ' + (HAS_TURN ? 'configured' : 'NOT set'),
     ' signalling: ' + (state.peer ? (state.peer.disconnected ? 'DISCONNECTED' : 'ok') : 'none')
   ];
   if (!state.peers.size) lines.push('', 'Nobody else is connected yet.');
@@ -1329,5 +1345,3 @@ renderControls();
 
 </body>
 </html>
-
-<!-- ghj -->
